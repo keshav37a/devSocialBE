@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const { DATABASE_NAME, CONNECTION_URI } = require('./keys');
 
 const handleDBConnect = async () => {
     try {
         console.log('handleMongoConnect called ');
-        await mongoose.connect(`${process.env.CONNECTION_URI}/${process.env.DATABASE_NAME}`);
+        await mongoose.connect(`${CONNECTION_URI}/${DATABASE_NAME}`);
     } catch (err) {
         console.log(`err in connection to db: ${err}`);
     }

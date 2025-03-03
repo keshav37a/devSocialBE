@@ -1,10 +1,9 @@
-const dotenv = require('dotenv');
+require('dotenv').config();
 const express = require('express');
-
-dotenv.config();
 const { handleDBConnect } = require('./config/database');
+const { userRoutes } = require('./routes/userRoutes');
+const { EXPRESS_PORT } = require('./config/keys');
 
-const EXPRESS_PORT = 7777;
 const app = express();
 
 handleDBConnect()
@@ -17,6 +16,11 @@ handleDBConnect()
         console.log(`error in connecting to db ${err}`);
     });
 
-app.use('/test', (req, res) => {
-    res.send('hello from the server');
-});
+app.use(express.json());
+app.use(
+    express.urlencoded({
+        extended: true,
+    })
+);
+
+app.use('/user', userRoutes);
