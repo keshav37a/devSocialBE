@@ -1,43 +1,87 @@
 const { Schema, model } = require('mongoose');
+const validator = require('validator');
 
-const userSchema = new Schema({
-    firstName: {
-        type: String,
-        required: true,
+const userSchema = new Schema(
+    {
+        firstName: {
+            type: String,
+            required: true,
+            trim: true,
+            minLength: 2,
+            maxLength: 30,
+        },
+        lastName: {
+            type: String,
+            required: true,
+            trim: true,
+            minLength: 2,
+            maxLength: 30,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+            maxLength: 60,
+            validate: {
+                validator: (value) => validator.isEmail(value),
+                message: 'Schema validation error. Invalid email',
+            },
+        },
+        password: {
+            type: String,
+            required: true,
+            maxLength: 30,
+        },
+        dob: {
+            type: Date,
+            validate: {
+                validator: (value) => validator.isDate(value),
+                message: 'Schema validation error. Invalid dob',
+            },
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female', 'other'],
+            trim: true,
+        },
+        type: {
+            type: String,
+            enum: ['admin', 'customer'],
+            default: 'customer',
+            trim: true,
+        },
+        mobile: {
+            type: String,
+            unique: true,
+            trim: true,
+            maxLength: 20,
+        },
+        photoUrl: {
+            type: String,
+            trim: true,
+            maxLength: 150,
+            validate: {
+                validator: (url) => validator.isURL(url),
+                message: 'Schema validation error. Invalid photoUrl.',
+            },
+        },
+        about: {
+            type: String,
+            trim: true,
+            maxLength: 300,
+        },
+        skills: {
+            type: [String],
+            validate: {
+                validator: (skills) => skills.length < 6,
+                message: 'Schema validation error. Count of skills must be less than 5',
+            },
+        },
     },
-    lastName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    dob: {
-        type: Date,
-        required: true,
-    },
-    gender: {
-        type: String,
-        enum: ['male', 'female', 'other'],
-        required: true,
-    },
-    type: {
-        type: String,
-        enum: ['admin', 'customer'],
-        default: 'customer',
-    },
-    mobile: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-});
+    { timestamps: true }
+);
 
 const UserModel = model('User', userSchema);
 

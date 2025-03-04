@@ -22,7 +22,7 @@ const getUserById = async (req, res) => {
         const userId = req.params.userId;
         if (!userId) {
             return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'user id missing in params',
+                message: 'api validation error. user id missing in params',
                 statusCode: STATUS_CODES.BAD_REQUEST,
             });
         }
@@ -51,14 +51,20 @@ const getUserById = async (req, res) => {
 
 const createNewUser = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, dob, gender, mobile } = req.body;
-        if (!firstName || !lastName || !email || !password || !dob || !gender || !mobile) {
+        const { firstName, lastName, email, password, skills } = req.body;
+        if (!firstName || !lastName || !email || !password) {
             return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'required body params missing',
+                message: 'api validation error. required body params missing',
                 statusCode: STATUS_CODES.BAD_REQUEST,
             });
         }
-        const newUser = UserModel({ firstName, lastName, email, password, dob, gender, mobile });
+        if (skills.length > 5) {
+            return res.status(STATUS_CODES.BAD_REQUEST).send({
+                message: 'api validation error. skills cannot be more than 5',
+                statusCode: STATUS_CODES.BAD_REQUEST,
+            });
+        }
+        const newUser = UserModel(req.body);
         const newSavedUser = await newUser.save();
         return res.status(STATUS_CODES.SUCCESS).send({
             _id: newSavedUser._id,
@@ -98,7 +104,6 @@ const deleteUserByEmail = async (req, res) => {
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        console.log(err);
         return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
@@ -112,7 +117,7 @@ const deleteUserById = async (req, res) => {
         const id = req.params.userId;
         if (!id) {
             return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'user id missing in params',
+                message: 'api validation error. user id missing in params',
                 statusCode: STATUS_CODES.BAD_REQUEST,
             });
         }
@@ -123,7 +128,6 @@ const deleteUserById = async (req, res) => {
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        console.log(err);
         return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
@@ -137,7 +141,7 @@ const updateUser = async (req, res) => {
         const userId = req.body.userId;
         if (!userId) {
             return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'user id missing in body',
+                message: 'api validation error. user id missing in body',
                 statusCode: STATUS_CODES.BAD_REQUEST,
             });
         }
@@ -148,7 +152,6 @@ const updateUser = async (req, res) => {
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        console.log(err);
         return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
