@@ -1,16 +1,50 @@
+const { STATUS_CODES } = require('../config/keys');
 const { UserModel } = require('../models/userModel');
 
 const getAllUsers = async (_, res) => {
     try {
         const users = await UserModel.find();
-        res.status(200).send({
+        return res.status(STATUS_CODES.SUCCESS).send({
             users,
+            statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        res.status(500).send({
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
-            statusCode: 500,
+            statusCode: STATUS_CODES.SERVER_ERROR,
+        });
+    }
+};
+
+const getUserById = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        if (!userId) {
+            return res.status(STATUS_CODES.BAD_REQUEST).send({
+                message: 'user id missing in params',
+                statusCode: STATUS_CODES.BAD_REQUEST,
+            });
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(STATUS_CODES.NOT_FOUND).send({
+                user,
+                message: 'User not found',
+                statusCode: STATUS_CODES.NOT_FOUND,
+            });
+        }
+
+        return res.status(STATUS_CODES.SUCCESS).send({
+            user,
+            statusCode: STATUS_CODES.SUCCESS,
+        });
+    } catch (err) {
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
+            message: err?.message,
+            errorCode: err?.errorResponse?.code,
+            statusCode: STATUS_CODES.SERVER_ERROR,
         });
     }
 };
@@ -18,19 +52,24 @@ const getAllUsers = async (_, res) => {
 const createNewUser = async (req, res) => {
     try {
         const { firstName, lastName, email, password, dob, gender, mobile } = req.body;
+        if (!firstName || !lastName || !email || !password || !dob || !gender || !mobile) {
+            return res.status(STATUS_CODES.BAD_REQUEST).send({
+                message: 'required body params missing',
+                statusCode: STATUS_CODES.BAD_REQUEST,
+            });
+        }
         const newUser = UserModel({ firstName, lastName, email, password, dob, gender, mobile });
         const newSavedUser = await newUser.save();
-        console.log(newSavedUser);
-        res.status(200).send({
+        return res.status(STATUS_CODES.SUCCESS).send({
             _id: newSavedUser._id,
             message: 'User created successfully',
-            statusCode: 200,
+            statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        res.status(500).send({
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
-            statusCode: 500,
+            statusCode: STATUS_CODES.SERVER_ERROR,
         });
     }
 };
@@ -39,23 +78,31 @@ const deleteUserByEmail = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
-            res.status(400).send({
-                message: 'email missing',
-                statusCode: 400,
+            return res.status(STATUS_CODES.BAD_REQUEST).send({
+                message: 'email missing in body',
+                statusCode: STATUS_CODES.BAD_REQUEST,
             });
         }
         const deletedUser = await UserModel.findOneAndDelete({ email });
-        res.status(200).send({
+        if (!deletedUser) {
+            return res.status(STATUS_CODES.NOT_FOUND).send({
+                _id: deletedUser?._id,
+                message: 'User not found',
+                statusCode: STATUS_CODES.NOT_FOUND,
+            });
+        }
+
+        return res.status(STATUS_CODES.SUCCESS).send({
             _id: deletedUser._id,
             message: 'User deleted successfully',
-            statusCode: 200,
+            statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
         console.log(err);
-        res.status(500).send({
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
-            statusCode: 500,
+            statusCode: STATUS_CODES.SERVER_ERROR,
         });
     }
 };
@@ -64,23 +111,48 @@ const deleteUserById = async (req, res) => {
     try {
         const id = req.params.userId;
         if (!id) {
-            res.status(400).send({
-                message: 'user id missing',
-                statusCode: 400,
+            return res.status(STATUS_CODES.BAD_REQUEST).send({
+                message: 'user id missing in params',
+                statusCode: STATUS_CODES.BAD_REQUEST,
             });
         }
         const deletedUser = await UserModel.findByIdAndDelete(id);
-        res.status(200).send({
+        return res.status(STATUS_CODES.SUCCESS).send({
             _id: deletedUser._id,
             message: 'User deleted successfully',
-            statusCode: 200,
+            statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
         console.log(err);
-        res.status(500).send({
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
             message: err?.message,
             errorCode: err?.errorResponse?.code,
-            statusCode: 500,
+            statusCode: STATUS_CODES.SERVER_ERROR,
+        });
+    }
+};
+
+const updateUser = async (req, res) => {
+    try {
+        const userId = req.body.userId;
+        if (!userId) {
+            return res.status(STATUS_CODES.BAD_REQUEST).send({
+                message: 'user id missing in body',
+                statusCode: STATUS_CODES.BAD_REQUEST,
+            });
+        }
+        const updatedUser = await UserModel.findByIdAndUpdate(userId, req.body, { new: true });
+        return res.status(STATUS_CODES.SUCCESS).send({
+            message: 'user updated successfully',
+            user: updatedUser,
+            statusCode: STATUS_CODES.SUCCESS,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
+            message: err?.message,
+            errorCode: err?.errorResponse?.code,
+            statusCode: STATUS_CODES.SERVER_ERROR,
         });
     }
 };
@@ -90,4 +162,6 @@ module.exports = {
     deleteUserByEmail,
     deleteUserById,
     getAllUsers,
+    getUserById,
+    updateUser,
 };
