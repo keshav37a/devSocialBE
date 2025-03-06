@@ -1,5 +1,12 @@
 const { STATUS_CODES } = require('../config/keys');
 const { UserModel } = require('../models/userModel');
+const {
+    validateSignUpData,
+    validateGetUserById,
+    validateDeleteUserByEmail,
+    validateDeleteUserById,
+    validateUpdateUser,
+} = require('../validation/userValidation');
 
 const getAllUsers = async (_, res) => {
     try {
@@ -9,24 +16,19 @@ const getAllUsers = async (_, res) => {
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
         });
     }
 };
 
 const getUserById = async (req, res) => {
     try {
+        validateGetUserById(req);
         const userId = req.params.userId;
-        if (!userId) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'api validation error. user id missing in params',
-                statusCode: STATUS_CODES.BAD_REQUEST,
-            });
-        }
-
         const user = await UserModel.findById(userId);
         if (!user) {
             return res.status(STATUS_CODES.NOT_FOUND).send({
@@ -35,35 +37,23 @@ const getUserById = async (req, res) => {
                 statusCode: STATUS_CODES.NOT_FOUND,
             });
         }
-
         return res.status(STATUS_CODES.SUCCESS).send({
             user,
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
         });
     }
 };
 
-const createNewUser = async (req, res) => {
+const signUpNewUser = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, skills } = req.body;
-        if (!firstName || !lastName || !email || !password) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'api validation error. required body params missing',
-                statusCode: STATUS_CODES.BAD_REQUEST,
-            });
-        }
-        if (skills.length > 5) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'api validation error. skills cannot be more than 5',
-                statusCode: STATUS_CODES.BAD_REQUEST,
-            });
-        }
+        validateSignUpData(req);
         const newUser = UserModel(req.body);
         const newSavedUser = await newUser.save();
         return res.status(STATUS_CODES.SUCCESS).send({
@@ -72,23 +62,19 @@ const createNewUser = async (req, res) => {
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
         });
     }
 };
 
 const deleteUserByEmail = async (req, res) => {
     try {
+        validateDeleteUserByEmail(req);
         const { email } = req.body;
-        if (!email) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'email missing in body',
-                statusCode: STATUS_CODES.BAD_REQUEST,
-            });
-        }
         const deletedUser = await UserModel.findOneAndDelete({ email });
         if (!deletedUser) {
             return res.status(STATUS_CODES.NOT_FOUND).send({
@@ -97,54 +83,45 @@ const deleteUserByEmail = async (req, res) => {
                 statusCode: STATUS_CODES.NOT_FOUND,
             });
         }
-
         return res.status(STATUS_CODES.SUCCESS).send({
             _id: deletedUser._id,
             message: 'User deleted successfully',
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
         });
     }
 };
 
 const deleteUserById = async (req, res) => {
     try {
-        const id = req.params.userId;
-        if (!id) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'api validation error. user id missing in params',
-                statusCode: STATUS_CODES.BAD_REQUEST,
-            });
-        }
-        const deletedUser = await UserModel.findByIdAndDelete(id);
+        validateDeleteUserById(req);
+        const userId = req.params.userId;
+        const deletedUser = await UserModel.findByIdAndDelete(userId);
         return res.status(STATUS_CODES.SUCCESS).send({
             _id: deletedUser._id,
             message: 'User deleted successfully',
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
         });
     }
 };
 
 const updateUser = async (req, res) => {
     try {
+        validateUpdateUser(req);
         const userId = req.body.userId;
-        if (!userId) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'api validation error. user id missing in body',
-                statusCode: STATUS_CODES.BAD_REQUEST,
-            });
-        }
         const updatedUser = await UserModel.findByIdAndUpdate(userId, req.body, { new: true });
         return res.status(STATUS_CODES.SUCCESS).send({
             message: 'user updated successfully',
@@ -161,10 +138,10 @@ const updateUser = async (req, res) => {
 };
 
 module.exports = {
-    createNewUser,
-    deleteUserByEmail,
-    deleteUserById,
     getAllUsers,
     getUserById,
+    signUpNewUser,
+    deleteUserByEmail,
+    deleteUserById,
     updateUser,
 };

@@ -45,12 +45,14 @@ const userSchema = new Schema(
             type: String,
             enum: ['male', 'female', 'other'],
             trim: true,
+            lowercase: true,
         },
         type: {
             type: String,
             enum: ['admin', 'customer'],
             default: 'customer',
             trim: true,
+            lowercase: true,
         },
         mobile: {
             type: String,

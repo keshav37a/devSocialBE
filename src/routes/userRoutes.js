@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-    createNewUser,
+    signUpNewUser,
     deleteUserByEmail,
     deleteUserById,
     getAllUsers,
@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get('/all', getAllUsers);
 router.get('/:userId', getUserById);
-router.post('/signup', createNewUser);
+router.post('/signup', signUpNewUser);
 router.patch('/update', updateUser);
 router.delete('/delete', deleteUserByEmail);
 router.delete('/delete/:userId', deleteUserById);
