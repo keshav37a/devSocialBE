@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const { STATUS_CODES } = require('../config/keys');
 
-const validateUserIdHelper = (userId) => {
+const _validateUserIdHelper = (userId) => {
     if (!userId) {
         throw new Error('API validation error. userId missing', {
             cause: { statusCode: STATUS_CODES.BAD_REQUEST },
@@ -14,7 +15,7 @@ const validateUserIdHelper = (userId) => {
     }
 };
 
-const validateUserFieldsHelper = (userData) => {
+const _validateUserFieldsHelper = (userData) => {
     const { firstName, lastName, email, password, skills, photoUrl, dob, gender, mobile, about } = userData;
     if (!firstName) {
         throw new Error('API validation error. First Name missing', {
@@ -55,16 +56,6 @@ const validateUserFieldsHelper = (userData) => {
     }
 };
 
-const validateGetUserById = (req) => {
-    const userId = req.params.userId;
-    validateUserIdHelper(userId);
-};
-
-const validateSignUpData = (req) => {
-    const userData = req.body;
-    validateUserFieldsHelper(userData);
-};
-
 const validateDeleteUserByEmail = (req) => {
     const email = req.body.email;
     if (!email) {
@@ -76,18 +67,42 @@ const validateDeleteUserByEmail = (req) => {
 
 const validateDeleteUserById = (req) => {
     const userId = req.params.userId;
-    validateUserIdHelper(userId);
+    _validateUserIdHelper(userId);
+};
+
+const validateGetUserById = (req) => {
+    const userId = req.params.userId;
+    _validateUserIdHelper(userId);
 };
 
 const validateUpdateUser = (req) => {
     const userId = req.params.userId;
-    validateUserIdHelper(userId);
+    _validateUserIdHelper(userId);
+};
+
+const validateUserSignUp = (req) => {
+    const userData = req.body;
+    _validateUserFieldsHelper(userData);
+};
+
+const validateUserSignIn = (req) => {
+    const { email, password } = req.body;
+    if (!email) {
+        throw new Error('API validation error. Email missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+    }
+    if (!validator.isEmail(email)) {
+        throw new Error('API validation error. Invalid email', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+    }
+    if (!password) {
+        throw new Error('API validation error. Password missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+    }
 };
 
 module.exports = {
-    validateGetUserById,
-    validateSignUpData,
     validateDeleteUserByEmail,
     validateDeleteUserById,
+    validateGetUserById,
     validateUpdateUser,
+    validateUserSignUp,
+    validateUserSignIn,
 };

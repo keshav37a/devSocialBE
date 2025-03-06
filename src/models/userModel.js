@@ -32,7 +32,6 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: true,
-            maxLength: 30,
         },
         dob: {
             type: Date,
