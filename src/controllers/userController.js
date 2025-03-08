@@ -1,6 +1,5 @@
-const { hash, compare } = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { STATUS_CODES, USER, JWT_TOKEN_SECRET_KEY } = require('../config/keys');
+const { hash } = require('bcrypt');
+const { STATUS_CODES, USER } = require('../config/keys');
 const { UserModel } = require('../models/userModel');
 const {
     validateUserSignIn,
@@ -155,15 +154,14 @@ const signIn = async (req, res) => {
             });
         }
 
-        const isPasswordMatch = await compare(password, user.password);
+        const isPasswordMatch = await user.validatePassword(password);
         if (!isPasswordMatch) {
             throw new Error('API validation error. Incorrect password', {
-                cause: { statusCode: STATUS_CODES.NOBAD_REQUESTT_FOUND },
+                cause: { statusCode: STATUS_CODES.BAD_REQUEST },
             });
         }
-        const token = await jwt.sign({ _id: user._id }, JWT_TOKEN_SECRET_KEY, {
-            expiresIn: '7d',
-        });
+
+        const token = await user.getJWT();
         user.password = null;
         res.cookie('token', token);
         return res.status(STATUS_CODES.SUCCESS).send({
