@@ -1,5 +1,6 @@
 const { hash, compare } = require('bcrypt');
-const { STATUS_CODES, USER } = require('../config/keys');
+const jwt = require('jsonwebtoken');
+const { STATUS_CODES, USER, JWT_TOKEN_SECRET_KEY } = require('../config/keys');
 const { UserModel } = require('../models/userModel');
 const {
     validateUserSignIn,
@@ -105,6 +106,14 @@ const signUpNewUser = async (req, res) => {
     try {
         validateUserSignUp(req);
         const { firstName, lastName, email, password, dob, gender, type, mobile, photoUrl, about, skills } = req.body;
+        const existingUser = await UserModel.findOne({ email });
+
+        if (existingUser) {
+            throw new Error(`API validation error. email already in use`, {
+                cause: { statusCode: STATUS_CODES.BAD_REQUEST },
+            });
+        }
+
         const passwordHash = await hash(password, USER.PASSWORD_SALT_ROUNDS);
         const newUser = UserModel({
             firstName,
@@ -148,12 +157,15 @@ const signIn = async (req, res) => {
 
         const isPasswordMatch = await compare(password, user.password);
         if (!isPasswordMatch) {
-            return res.status(STATUS_CODES.BAD_REQUEST).send({
-                message: 'Incorrect password',
-                statusCode: STATUS_CODES.BAD_REQUEST,
+            throw new Error('API validation error. Incorrect password', {
+                cause: { statusCode: STATUS_CODES.NOBAD_REQUESTT_FOUND },
             });
         }
+        const token = await jwt.sign({ _id: user._id }, JWT_TOKEN_SECRET_KEY, {
+            expiresIn: '7d',
+        });
         user.password = null;
+        res.cookie('token', token);
         return res.status(STATUS_CODES.SUCCESS).send({
             message: 'User authenticated',
             statusCode: STATUS_CODES.SUCCESS,
@@ -172,8 +184,13 @@ const signIn = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         validateUpdateUser(req);
-        const userId = req.body.userId;
+        const { userId } = req.body;
         const updatedUser = await UserModel.findByIdAndUpdate(userId, req.body, { new: true });
+        if (!updatedUser) {
+            throw new Error('API validation error. User not found. userId not present in DB', {
+                cause: { statusCode: STATUS_CODES.NOT_FOUND },
+            });
+        }
         return res.status(STATUS_CODES.SUCCESS).send({
             message: 'user updated successfully',
             user: updatedUser,

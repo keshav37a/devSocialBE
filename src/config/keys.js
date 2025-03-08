@@ -7,8 +7,10 @@ module.exports = {
         SERVER_ERROR: 500,
         BAD_REQUEST: 400,
         NOT_FOUND: 404,
+        UNAUTHORIZED: 401,
     },
     USER: {
         PASSWORD_SALT_ROUNDS: 10,
     },
+    JWT_TOKEN_SECRET_KEY: process.env.JWT_TOKEN_SECRET_KEY,
 };

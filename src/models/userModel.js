@@ -55,7 +55,7 @@ const userSchema = new Schema(
         },
         mobile: {
             type: String,
-            unique: true,
+            // unique: true,
             trim: true,
             maxLength: 20,
         },

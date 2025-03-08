@@ -1,67 +1,61 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const { throwMissingDataError, throwInvalidDataError } = require('../utils/errorUtils');
 const { STATUS_CODES } = require('../config/keys');
 
 const _validateUserIdHelper = (userId) => {
     if (!userId) {
-        throw new Error('API validation error. userId missing', {
-            cause: { statusCode: STATUS_CODES.BAD_REQUEST },
-        });
+        throwMissingDataError('userId');
     }
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        throw new Error('API validation error. Invalid userId', {
-            cause: { statusCode: STATUS_CODES.BAD_REQUEST },
-        });
+        throwInvalidDataError('userId');
     }
 };
 
-const _validateUserFieldsHelper = (userData) => {
+const _validateUserFieldsHelper = async (userData) => {
     const { firstName, lastName, email, password, skills, photoUrl, dob, gender, mobile, about } = userData;
     if (!firstName) {
-        throw new Error('API validation error. First Name missing', {
-            cause: { statusCode: STATUS_CODES.BAD_REQUEST },
-        });
+        throwMissingDataError('firstName');
     }
     if (!lastName) {
-        throw new Error('API validation error. Last Name missing', {
+        throwMissingDataError('lastName');
+    }
+    if (!email) {
+        throwMissingDataError('email');
+    }
+    if (!password) {
+        throwMissingDataError('password');
+    }
+
+    if (!validator.isEmail(email)) {
+        throwInvalidDataError('email');
+    }
+    if (skills && skills.length > 5) {
+        throw new Error(`API validation error. skills can't be more than 5`, {
             cause: { statusCode: STATUS_CODES.BAD_REQUEST },
         });
     }
-    if (!email) {
-        throw new Error('API validation error. Email missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
-    }
-    if (!validator.isEmail(email)) {
-        throw new Error('API validation error. Invalid email', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
-    }
-    if (!password) {
-        throw new Error('API validation error. Password missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
-    }
-    if (skills && skills.length > 5) {
-        throw new Error('API validation error. Password missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
-    }
     if (photoUrl && !validator.isURL(photoUrl)) {
-        throw new Error('API validation error. Invalid photoUrl', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwInvalidDataError('photoUrl');
     }
     if (dob && !validator.isDate(dob)) {
-        throw new Error('API validation error. Invalid dob', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwInvalidDataError('dob');
     }
     if (gender && !['male', 'female', 'other'].includes()) {
-        throw new Error('API validation error. Invalid gender', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwInvalidDataError('gender');
     }
     if (mobile && mobile.length < 10) {
-        throw new Error('API validation error. Invalid mobile', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwInvalidDataError('mobile');
     }
     if (about && about.length >= 300) {
-        throw new Error('API validation error. Invalid about', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwInvalidDataError('about');
     }
 };
 
 const validateDeleteUserByEmail = (req) => {
     const email = req.body.email;
     if (!email) {
-        throw new Error('API validation error. Email missing in body', {
-            cause: { statusCode: STATUS_CODES.BAD_REQUEST },
-        });
+        throwMissingDataError('email');
     }
 };
 
@@ -76,7 +70,7 @@ const validateGetUserById = (req) => {
 };
 
 const validateUpdateUser = (req) => {
-    const userId = req.params.userId;
+    const userId = req.body.userId;
     _validateUserIdHelper(userId);
 };
 
@@ -88,13 +82,13 @@ const validateUserSignUp = (req) => {
 const validateUserSignIn = (req) => {
     const { email, password } = req.body;
     if (!email) {
-        throw new Error('API validation error. Email missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwMissingDataError('email');
     }
     if (!validator.isEmail(email)) {
-        throw new Error('API validation error. Invalid email', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwInvalidDataError('email');
     }
     if (!password) {
-        throw new Error('API validation error. Password missing', { cause: { statusCode: STATUS_CODES.BAD_REQUEST } });
+        throwMissingDataError('password');
     }
 };
 

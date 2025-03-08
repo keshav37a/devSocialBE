@@ -1,4 +1,5 @@
 const express = require('express');
+const { userAuth } = require('../middlewares/auth');
 const {
     signUpNewUser,
     deleteUserByEmail,
@@ -11,13 +12,13 @@ const {
 
 const router = express.Router();
 
-router.get('/all', getAllUsers);
-router.get('/:userId', getUserById);
+router.get('/all', userAuth, getAllUsers);
+router.get('/:userId', userAuth, getUserById);
 router.post('/signup', signUpNewUser);
 router.post('/signin', signIn);
-router.patch('/update', updateUser);
-router.delete('/delete', deleteUserByEmail);
-router.delete('/delete/:userId', deleteUserById);
+router.patch('/update', userAuth, updateUser);
+router.delete('/delete', userAuth, deleteUserByEmail);
+router.delete('/delete/:userId', userAuth, deleteUserById);
 
 module.exports = {
     userRoutes: router,

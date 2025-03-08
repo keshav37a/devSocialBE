@@ -1,4 +1,5 @@
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const { handleDBConnect } = require('./config/database');
 const { userRoutes } = require('./routes/userRoutes');
@@ -22,5 +23,6 @@ app.use(
         extended: true,
     })
 );
+app.use(cookieParser());
 
 app.use('/user', userRoutes);
