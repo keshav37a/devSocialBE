@@ -8,7 +8,14 @@ const {
     validateDeleteUserByEmail,
     validateDeleteUserById,
     validateUpdateUser,
+    validateGetUserProfile,
+    validateUpdateUserProfile,
 } = require('../validation/userValidation');
+const {
+    throwUserNotFoundError,
+    throwEmailAlreadyInUseError,
+    throwIncorrectPasswordError,
+} = require('../utils/errorUtils');
 
 const getAllUsers = async (_, res) => {
     try {
@@ -33,9 +40,29 @@ const getUserById = async (req, res) => {
         const userId = req.params.userId;
         const user = await UserModel.findById(userId);
         if (!user) {
-            throw new Error('API validation error. User not found. userId not present in DB', {
-                cause: { statusCode: STATUS_CODES.NOT_FOUND },
-            });
+            throwUserNotFoundError('userId');
+        }
+        return res.status(STATUS_CODES.SUCCESS).send({
+            user,
+            statusCode: STATUS_CODES.SUCCESS,
+        });
+    } catch (err) {
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
+        });
+    }
+};
+
+const getUserProfile = async (req, res) => {
+    try {
+        validateGetUserProfile(req);
+        const userId = req.body.userId;
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            throwUserNotFoundError('userId');
         }
         return res.status(STATUS_CODES.SUCCESS).send({
             user,
@@ -57,9 +84,7 @@ const deleteUserByEmail = async (req, res) => {
         const { email } = req.body;
         const deletedUser = await UserModel.findOneAndDelete({ email });
         if (!deletedUser) {
-            throw new Error('API validation error. User not found. email not present in DB', {
-                cause: { statusCode: STATUS_CODES.NOT_FOUND },
-            });
+            throwUserNotFoundError('email');
         }
         return res.status(STATUS_CODES.SUCCESS).send({
             _id: deletedUser._id,
@@ -82,9 +107,7 @@ const deleteUserById = async (req, res) => {
         const userId = req.params.userId;
         const deletedUser = await UserModel.findByIdAndDelete(userId);
         if (!deletedUser) {
-            throw new Error('API validation error. User not found. userId not present in DB', {
-                cause: { statusCode: STATUS_CODES.NOT_FOUND },
-            });
+            throwUserNotFoundError('userId');
         }
         return res.status(STATUS_CODES.SUCCESS).send({
             _id: deletedUser._id,
@@ -108,9 +131,7 @@ const signUpNewUser = async (req, res) => {
         const existingUser = await UserModel.findOne({ email });
 
         if (existingUser) {
-            throw new Error(`API validation error. email already in use`, {
-                cause: { statusCode: STATUS_CODES.BAD_REQUEST },
-            });
+            throwEmailAlreadyInUseError();
         }
 
         const passwordHash = await hash(password, USER.PASSWORD_SALT_ROUNDS);
@@ -143,22 +164,18 @@ const signUpNewUser = async (req, res) => {
     }
 };
 
-const signIn = async (req, res) => {
+const signInUser = async (req, res) => {
     try {
         validateUserSignIn(req);
         const { email, password } = req.body;
         const user = await UserModel.findOne({ email });
         if (!user) {
-            throw new Error('API validation error. User not found. email not present in DB', {
-                cause: { statusCode: STATUS_CODES.NOT_FOUND },
-            });
+            throwUserNotFoundError('email');
         }
 
         const isPasswordMatch = await user.validatePassword(password);
         if (!isPasswordMatch) {
-            throw new Error('API validation error. Incorrect password', {
-                cause: { statusCode: STATUS_CODES.BAD_REQUEST },
-            });
+            throwIncorrectPasswordError();
         }
 
         const token = await user.getJWT();
@@ -182,12 +199,41 @@ const signIn = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         validateUpdateUser(req);
-        const { userId } = req.body;
-        const updatedUser = await UserModel.findByIdAndUpdate(userId, req.body, { new: true });
+        const { firstName, lastName, email, dob, gender, type, mobile, photoUrl, about, skills } = req.body;
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            userId,
+            { firstName, lastName, email, dob, gender, type, mobile, photoUrl, about, skills },
+            { new: true }
+        );
         if (!updatedUser) {
-            throw new Error('API validation error. User not found. userId not present in DB', {
-                cause: { statusCode: STATUS_CODES.NOT_FOUND },
-            });
+            throwUserNotFoundError('userId');
+        }
+        return res.status(STATUS_CODES.SUCCESS).send({
+            message: 'user updated successfully',
+            user: updatedUser,
+            statusCode: STATUS_CODES.SUCCESS,
+        });
+    } catch (err) {
+        return res.status(STATUS_CODES.SERVER_ERROR).send({
+            message: err?.message,
+            errorCode: err?.errorResponse?.code,
+            statusCode: STATUS_CODES.SERVER_ERROR,
+        });
+    }
+};
+
+const updateUserProfile = async (req, res) => {
+    try {
+        validateUpdateUserProfile(req);
+        const { userId, firstName, lastName, dob, gender, mobile, photoUrl, about, skills } = req.body;
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            userId,
+            { firstName, lastName, dob, gender, mobile, photoUrl, about, skills },
+            { new: true }
+        );
+        if (!updatedUser) {
+            throwUserNotFoundError('userId');
         }
         return res.status(STATUS_CODES.SUCCESS).send({
             message: 'user updated successfully',
@@ -208,7 +254,9 @@ module.exports = {
     deleteUserById,
     getAllUsers,
     getUserById,
-    signIn,
+    getUserProfile,
+    signInUser,
     signUpNewUser,
     updateUser,
+    updateUserProfile,
 };

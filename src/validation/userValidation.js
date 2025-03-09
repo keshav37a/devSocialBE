@@ -69,7 +69,17 @@ const validateGetUserById = (req) => {
     _validateUserIdHelper(userId);
 };
 
+const validateGetUserProfile = (req) => {
+    const userId = req.body.userId;
+    _validateUserIdHelper(userId);
+};
+
 const validateUpdateUser = (req) => {
+    const userId = req.body.userId;
+    _validateUserIdHelper(userId);
+};
+
+const validateUpdateUserProfile = (req) => {
     const userId = req.body.userId;
     _validateUserIdHelper(userId);
 };
@@ -96,7 +106,9 @@ module.exports = {
     validateDeleteUserByEmail,
     validateDeleteUserById,
     validateGetUserById,
+    validateGetUserProfile,
     validateUpdateUser,
+    validateUpdateUserProfile,
     validateUserSignUp,
     validateUserSignIn,
 };
