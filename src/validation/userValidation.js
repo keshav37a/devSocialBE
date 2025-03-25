@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+
 const { throwMissingDataError, throwInvalidDataError } = require('../utils/errorUtils');
+
 const { STATUS_CODES } = require('../config/keys');
 
 const _validateUserIdHelper = (userId) => {

@@ -2,6 +2,7 @@ const { compare } = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Schema, model } = require('mongoose');
 const validator = require('validator');
+
 const { JWT_TOKEN_SECRET_KEY } = require('../config/keys');
 
 const userSchema = new Schema(

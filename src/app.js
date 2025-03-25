@@ -1,8 +1,13 @@
-require('dotenv').config();
 const cookieParser = require('cookie-parser');
+require('dotenv').config();
 const express = require('express');
+
 const { handleDBConnect } = require('./config/database');
+
+const { authRoutes } = require('./routes/authRoutes');
+const { profileRoutes } = require('./routes/profileRoutes');
 const { userRoutes } = require('./routes/userRoutes');
+
 const { EXPRESS_PORT } = require('./config/keys');
 
 const app = express();
@@ -25,4 +30,6 @@ app.use(
 );
 app.use(cookieParser());
 
+app.use('/auth', authRoutes);
+app.use('/profile', profileRoutes);
 app.use('/user', userRoutes);

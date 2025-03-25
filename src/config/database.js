@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const { DATABASE_NAME, CONNECTION_URI } = require('./keys');
+
+const { CONNECTION_URI, DATABASE_NAME } = require('./keys');
 
 const handleDBConnect = async () => {
     try {
