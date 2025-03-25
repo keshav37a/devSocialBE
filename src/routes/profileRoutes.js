@@ -7,7 +7,7 @@ const router = express.Router();
 
 /* Customer routes */
 router.patch('/edit', userAuth, updateUserProfile);
-router.post('/view', userAuth, getUserProfile);
+router.get('/view/:userId', userAuth, getUserProfile);
 
 module.exports = {
     profileRoutes: router,

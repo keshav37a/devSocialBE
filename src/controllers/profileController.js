@@ -8,7 +8,7 @@ const { STATUS_CODES } = require('../config/keys');
 const getUserProfile = async (req, res) => {
     try {
         validateGetUserProfile(req);
-        const userId = req.body.userId;
+        const userId = req.params.userId;
         const user = await UserModel.findById(userId);
         if (!user) {
             throwUserNotFoundError('userId');

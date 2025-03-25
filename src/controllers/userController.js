@@ -98,6 +98,7 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         validateUpdateUser(req);
+        const userId = req.params.userId;
         const { firstName, lastName, email, dob, gender, type, mobile, photoUrl, about, skills } = req.body;
         const updatedUser = await UserModel.findByIdAndUpdate(
             userId,

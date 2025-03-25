@@ -72,12 +72,12 @@ const validateGetUserById = (req) => {
 };
 
 const validateGetUserProfile = (req) => {
-    const userId = req.body.userId;
+    const userId = req.params.userId;
     _validateUserIdHelper(userId);
 };
 
 const validateUpdateUser = (req) => {
-    const userId = req.body.userId;
+    const userId = req.params.userId;
     _validateUserIdHelper(userId);
 };
 
