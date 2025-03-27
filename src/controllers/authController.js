@@ -83,7 +83,29 @@ const signUpNewUser = async (req, res) => {
     }
 };
 
+const signOutUser = async (_, res) => {
+    try {
+        res.cookie('token', null, {
+            expires: new Date(Date.now()),
+        })
+            .status(STATUS_CODES.SUCCESS)
+            .send({
+                message: 'User signed out successfully',
+                errorCode: null,
+                user: null,
+            });
+    } catch (err) {
+        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
+        return res.status(statusCode).send({
+            message: err.message,
+            errorCode: err.errorResponse?.code,
+            statusCode,
+        });
+    }
+};
+
 module.exports = {
     signInUser,
+    signOutUser,
     signUpNewUser,
 };

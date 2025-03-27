@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const { throwMissingDataError, throwInvalidDataError } = require('../utils/errorUtils');
+const {
+    throwInvalidDataError,
+    throwInvalidUserProfileUpdateError,
+    throwMissingDataError,
+} = require('../utils/errorUtils');
 
 const { STATUS_CODES } = require('../config/keys');
 
@@ -82,8 +86,14 @@ const validateUpdateUser = (req) => {
 };
 
 const validateUpdateUserProfile = (req) => {
-    const userId = req.body.userId;
+    const userId = req.params.userId;
     _validateUserIdHelper(userId);
+    const allowedFields = ['firstName', 'lastName', 'dob', 'gender', 'mobile', 'photoUrl', 'about', 'skills'];
+    const isRequestValid = Object.keys(req.body).every((key) => allowedFields.includes(key));
+    if (!isRequestValid) {
+        throwInvalidUserProfileUpdateError();
+    }
+    return isRequestValid;
 };
 
 const validateUserSignUp = (req) => {

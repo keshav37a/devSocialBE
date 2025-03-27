@@ -30,19 +30,14 @@ const getUserProfile = async (req, res) => {
 const updateUserProfile = async (req, res) => {
     try {
         validateUpdateUserProfile(req);
-        const { userId, firstName, lastName, dob, gender, mobile, photoUrl, about, skills } = req.body;
-
-        const updatedUser = await UserModel.findByIdAndUpdate(
-            userId,
-            { firstName, lastName, dob, gender, mobile, photoUrl, about, skills },
-            { new: true }
-        );
-        if (!updatedUser) {
-            throwUserNotFoundError('userId');
-        }
+        const user = req.user;
+        Object.keys(req.body).forEach((key) => {
+            user[key] = req.body[key];
+        });
+        await user.save();
         return res.status(STATUS_CODES.SUCCESS).send({
             message: 'user updated successfully',
-            user: updatedUser,
+            user,
             statusCode: STATUS_CODES.SUCCESS,
         });
     } catch (err) {

@@ -24,6 +24,12 @@ const throwInvalidTokenError = () => {
     });
 };
 
+const throwInvalidUserProfileUpdateError = () => {
+    throw new Error('Invalid profile update request. Some fields are not editable', {
+        cause: { statusCode: STATUS_CODES.BAD_REQUEST },
+    });
+};
+
 const throwMissingDataError = (missingFieldName) => {
     throw new Error(`API validation error. ${missingFieldName} missing`, {
         cause: { statusCode: STATUS_CODES.BAD_REQUEST },
@@ -53,6 +59,7 @@ module.exports = {
     throwIncorrectPasswordError,
     throwInvalidDataError,
     throwInvalidTokenError,
+    throwInvalidUserProfileUpdateError,
     throwMissingDataError,
     throwTokenNotFoundError,
     throwUserForbiddenError,

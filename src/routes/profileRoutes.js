@@ -6,7 +6,7 @@ const { userAuth } = require('../middlewares/auth');
 const router = express.Router();
 
 /* Customer routes */
-router.patch('/edit', userAuth, updateUserProfile);
+router.patch('/edit/:userId', userAuth, updateUserProfile);
 router.get('/view/:userId', userAuth, getUserProfile);
 
 module.exports = {
