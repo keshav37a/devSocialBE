@@ -1,29 +1,44 @@
-const { UserModel } = require('../models/userModel');
+const { hash } = require('bcrypt');
+const { throwIncorrectPasswordError, throwUserForbiddenError } = require('../utils/errorUtils');
+const { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } = require('../validation/userValidation');
 
-const { throwUserNotFoundError } = require('../utils/errorUtils');
-const { validateGetUserProfile, validateUpdateUserProfile } = require('../validation/userValidation');
+const { USER } = require('../config/keys');
+const { sendStandardResponse } = require('../utils/responseUtils');
 
-const { STATUS_CODES } = require('../config/keys');
+const changePasswordAsSignedInUser = async (req, res) => {
+    try {
+        validateChangePasswordAsSignedInUser(req);
+        const user = req.user;
+
+        const currentPassword = req.body.currentPassword;
+        const newPassword = req.body.newPassword;
+
+        const isPasswordValid = await user.validatePassword(currentPassword);
+
+        if (!isPasswordValid) {
+            throwIncorrectPasswordError();
+        }
+
+        const newPasswordHash = await hash(newPassword, USER.PASSWORD_SALT_ROUNDS);
+        user.password = newPasswordHash;
+
+        await user.save();
+
+        sendStandardResponse(res, { message: 'password changed successfully', data: { _id: user._id } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
+    }
+};
 
 const getUserProfile = async (req, res) => {
     try {
-        validateGetUserProfile(req);
-        const userId = req.params.userId;
-        const user = await UserModel.findById(userId);
+        const user = req.user;
         if (!user) {
-            throwUserNotFoundError('userId');
+            throwUserForbiddenError();
         }
-        return res.status(STATUS_CODES.SUCCESS).send({
-            user,
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'User profile fetched successfully', data: { user } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
@@ -35,21 +50,14 @@ const updateUserProfile = async (req, res) => {
             user[key] = req.body[key];
         });
         await user.save();
-        return res.status(STATUS_CODES.SUCCESS).send({
-            message: 'user updated successfully',
-            user,
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
-        });
+        sendStandardResponse(res, { message: 'user updated successfully', data: { user } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
 module.exports = {
+    changePasswordAsSignedInUser,
     getUserProfile,
     updateUserProfile,
 };

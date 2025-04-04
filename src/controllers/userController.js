@@ -7,8 +7,7 @@ const {
     validateGetUserById,
     validateUpdateUser,
 } = require('../validation/userValidation');
-
-const { STATUS_CODES } = require('../config/keys');
+const { sendStandardResponse } = require('../utils/responseUtils');
 
 const deleteUserByEmail = async (req, res) => {
     try {
@@ -18,18 +17,9 @@ const deleteUserByEmail = async (req, res) => {
         if (!deletedUser) {
             throwUserNotFoundError('email');
         }
-        return res.status(STATUS_CODES.SUCCESS).send({
-            _id: deletedUser._id,
-            message: 'User deleted successfully',
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'User deleted successfuly', data: { user: deletedUser } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
@@ -41,35 +31,18 @@ const deleteUserById = async (req, res) => {
         if (!deletedUser) {
             throwUserNotFoundError('userId');
         }
-        return res.status(STATUS_CODES.SUCCESS).send({
-            _id: deletedUser._id,
-            message: 'User deleted successfully',
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'User deleted successfuly', data: { user: deletedUser } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
 const getAllUsers = async (_, res) => {
     try {
         const users = await UserModel.find();
-        return res.status(STATUS_CODES.SUCCESS).send({
-            users,
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'All users fetched successfuly', data: { users } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
@@ -81,17 +54,9 @@ const getUserById = async (req, res) => {
         if (!user) {
             throwUserNotFoundError('userId');
         }
-        return res.status(STATUS_CODES.SUCCESS).send({
-            user,
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'User fetched successfully', data: { user } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
@@ -108,17 +73,9 @@ const updateUser = async (req, res) => {
         if (!updatedUser) {
             throwUserNotFoundError('userId');
         }
-        return res.status(STATUS_CODES.SUCCESS).send({
-            message: 'user updated successfully',
-            user: updatedUser,
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        return res.status(STATUS_CODES.SERVER_ERROR).send({
-            message: err?.message,
-            errorCode: err?.errorResponse?.code,
-            statusCode: STATUS_CODES.SERVER_ERROR,
-        });
+        sendStandardResponse(res, { message: 'User updated successfully', data: { user: updatedUser } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 

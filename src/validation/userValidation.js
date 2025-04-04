@@ -5,9 +5,10 @@ const {
     throwInvalidDataError,
     throwInvalidUserProfileUpdateError,
     throwMissingDataError,
+    throwSameCurrentPasswordNewPasswordError,
 } = require('../utils/errorUtils');
 
-const { STATUS_CODES } = require('../config/keys');
+const { REQUEST_STATUS } = require('../config/keys');
 
 const _validateUserIdHelper = (userId) => {
     if (!userId) {
@@ -38,7 +39,7 @@ const _validateUserFieldsHelper = async (userData) => {
     }
     if (skills && skills.length > 5) {
         throw new Error(`API validation error. skills can't be more than 5`, {
-            cause: { statusCode: STATUS_CODES.BAD_REQUEST },
+            cause: { statusCode: REQUEST_STATUS.BAD_REQUEST },
         });
     }
     if (photoUrl && !validator.isURL(photoUrl)) {
@@ -58,6 +59,28 @@ const _validateUserFieldsHelper = async (userData) => {
     }
 };
 
+const validateChangePasswordAsSignedInUser = (req) => {
+    const currentPassword = req.body.currentPassword;
+    const newPassword = req.body.newPassword;
+    const user = req.user;
+
+    if (!user) {
+        throwUserForbiddenError();
+    }
+
+    if (!currentPassword) {
+        throwMissingDataError('Old password');
+    }
+
+    if (!newPassword) {
+        throwMissingDataError('New password');
+    }
+
+    if (currentPassword === newPassword) {
+        throwSameCurrentPasswordNewPasswordError();
+    }
+};
+
 const validateDeleteUserByEmail = (req) => {
     const email = req.body.email;
     if (!email) {
@@ -71,11 +94,6 @@ const validateDeleteUserById = (req) => {
 };
 
 const validateGetUserById = (req) => {
-    const userId = req.params.userId;
-    _validateUserIdHelper(userId);
-};
-
-const validateGetUserProfile = (req) => {
     const userId = req.params.userId;
     _validateUserIdHelper(userId);
 };
@@ -115,10 +133,10 @@ const validateUserSignIn = (req) => {
 };
 
 module.exports = {
+    validateChangePasswordAsSignedInUser,
     validateDeleteUserByEmail,
     validateDeleteUserById,
     validateGetUserById,
-    validateGetUserProfile,
     validateUpdateUser,
     validateUpdateUserProfile,
     validateUserSignUp,

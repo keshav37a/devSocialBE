@@ -3,13 +3,15 @@ const { hash } = require('bcrypt');
 const { UserModel } = require('../models/userModel');
 
 const {
-    throwUserNotFoundError,
     throwEmailAlreadyInUseError,
     throwIncorrectPasswordError,
+    throwUserNotFoundError,
 } = require('../utils/errorUtils');
+const { sendStandardResponse } = require('../utils/responseUtils');
+
 const { validateUserSignIn, validateUserSignUp } = require('../validation/userValidation');
 
-const { USER, STATUS_CODES } = require('../config/keys');
+const { USER } = require('../config/keys');
 
 const signInUser = async (req, res) => {
     try {
@@ -28,18 +30,20 @@ const signInUser = async (req, res) => {
         const token = await user.getJWT();
         user.password = null;
         res.cookie('token', token);
-        return res.status(STATUS_CODES.SUCCESS).send({
-            message: 'User authenticated',
-            statusCode: STATUS_CODES.SUCCESS,
-            user,
+        sendStandardResponse(res, { message: 'User authenticated', data: { user } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
+    }
+};
+
+const signOutUser = async (_, res) => {
+    try {
+        res.cookie('token', null, {
+            expires: new Date(Date.now()),
         });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'User signed out successfully', data: { user: null } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 
@@ -68,39 +72,9 @@ const signUpNewUser = async (req, res) => {
             skills,
         });
         const newSavedUser = await newUser.save();
-        return res.status(STATUS_CODES.SUCCESS).send({
-            _id: newSavedUser._id,
-            message: 'User created successfully',
-            statusCode: STATUS_CODES.SUCCESS,
-        });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
-    }
-};
-
-const signOutUser = async (_, res) => {
-    try {
-        res.cookie('token', null, {
-            expires: new Date(Date.now()),
-        })
-            .status(STATUS_CODES.SUCCESS)
-            .send({
-                message: 'User signed out successfully',
-                errorCode: null,
-                user: null,
-            });
-    } catch (err) {
-        const statusCode = err.cause?.statusCode ? err.cause.statusCode : STATUS_CODES.SERVER_ERROR;
-        return res.status(statusCode).send({
-            message: err.message,
-            errorCode: err.errorResponse?.code,
-            statusCode,
-        });
+        sendStandardResponse(res, { message: 'User created successfully', data: { user: newSavedUser } });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
     }
 };
 

@@ -3,13 +3,31 @@ module.exports = {
     DATABASE_NAME: process.env.DATABASE_NAME,
     EXPRESS_PORT: process.env.EXPRESS_PORT,
     JWT_TOKEN_SECRET_KEY: process.env.JWT_TOKEN_SECRET_KEY,
-    STATUS_CODES: {
-        SUCCESS: 200,
-        BAD_REQUEST: 400,
-        UNAUTHORIZED: 401,
-        FORBIDDEN: 403,
-        NOT_FOUND: 404,
-        SERVER_ERROR: 500,
+    REQUEST_STATUS: {
+        SUCCESS: {
+            statusCode: 200,
+            success: true,
+        },
+        BAD_REQUEST: {
+            statusCode: 400,
+            success: false,
+        },
+        UNAUTHORIZED: {
+            statusCode: 401,
+            success: false,
+        },
+        FORBIDDEN: {
+            statusCode: 403,
+            success: false,
+        },
+        NOT_FOUND: {
+            statusCode: 404,
+            success: false,
+        },
+        SERVER_ERROR: {
+            statusCode: 500,
+            success: false,
+        },
     },
     USER: {
         PASSWORD_SALT_ROUNDS: 10,
