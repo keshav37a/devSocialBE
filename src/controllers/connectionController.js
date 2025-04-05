@@ -13,7 +13,7 @@ const {
 const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     try {
         validateDeleteConnectionRequestByConnectionRequestId(req);
-        const connectionRequestId = req.params.connectionRequestId;
+        const { connectionRequestId } = req.params;
         const connectionRequest = await ConnectionRequestModel.findByIdAndDelete(connectionRequestId);
         if (!connectionRequest) {
             throwConnectionRequestNotFoundForThisConnectionRequestId();
@@ -35,7 +35,7 @@ const deleteConnectionRequestByUserId = async (req, res) => {
     try {
         validateDeleteConnectionRequestByUserId(req);
         const fromUserId = req.user._id;
-        const toUserId = req.params.toUserId;
+        const { toUserId } = req.params;
         const connectionRequest = await ConnectionRequestModel.findOneAndDelete({ fromUserId, toUserId });
         if (!connectionRequest) {
             throwConnectionRequestNotFoundForTheseUsers();
@@ -57,7 +57,7 @@ const getAllConnectionRequests = async (_, res) => {
     try {
         const allConnectionRequests = await ConnectionRequestModel.find({});
         sendStandardResponse(res, {
-            message: 'Connection request sent successfully',
+            message: 'Connection requests fetched successfully',
             data: { connectionRequests: allConnectionRequests },
         });
     } catch (error) {
@@ -68,9 +68,8 @@ const getAllConnectionRequests = async (_, res) => {
 const sendConnectionRequestToUser = async (req, res) => {
     try {
         await validateSendConnectionRequestToUser(req);
+        const { status, toUserId } = req.params;
         const fromUserId = req.user._id;
-        const toUserId = req.params.toUserId;
-        const status = req.params.status;
         const newConnectionRequest = ConnectionRequestModel({ fromUserId, toUserId, status });
         await newConnectionRequest.save();
         sendStandardResponse(res, {

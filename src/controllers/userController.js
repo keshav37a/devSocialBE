@@ -26,7 +26,7 @@ const deleteUserByEmail = async (req, res) => {
 const deleteUserById = async (req, res) => {
     try {
         validateDeleteUserById(req);
-        const userId = req.params.userId;
+        const { userId } = req.params;
         const deletedUser = await UserModel.findByIdAndDelete(userId);
         if (!deletedUser) {
             throwUserNotFoundError('userId');
@@ -49,7 +49,7 @@ const getAllUsers = async (_, res) => {
 const getUserById = async (req, res) => {
     try {
         validateGetUserById(req);
-        const userId = req.params.userId;
+        const { userId } = req.params;
         const user = await UserModel.findById(userId);
         if (!user) {
             throwUserNotFoundError('userId');
@@ -63,7 +63,7 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         validateUpdateUser(req);
-        const userId = req.params.userId;
+        const { userId } = req.params;
         const { firstName, lastName, email, dob, gender, type, mobile, photoUrl, about, skills } = req.body;
         const updatedUser = await UserModel.findByIdAndUpdate(
             userId,

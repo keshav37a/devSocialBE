@@ -24,6 +24,13 @@ const connectionRequestSchema = new Schema(
     { timestamps: true }
 );
 
+connectionRequestSchema.pre('save', function (next) {
+    if (this.fromUserId.equals(this.toUserId)) {
+        throw new Error("Schema validation error. fromUserId and toUserId can't be same.");
+    }
+    next();
+});
+
 const ConnectionRequestModel = model('ConnectionRequest', connectionRequestSchema);
 
 module.exports = {

@@ -16,8 +16,7 @@ const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
     if (!user) {
         throwUserForbiddenError();
     }
-    console.log(req.params);
-    const connectionRequestId = req.params?.connectionRequestId;
+    const { connectionRequestId } = req.params;
     if (!connectionRequestId) {
         throwMissingConnectionRequestError();
     }
@@ -31,7 +30,7 @@ const validateDeleteConnectionRequestByUserId = async (req) => {
     if (!user) {
         throwUserForbiddenError();
     }
-    const toUserId = req.params?.toUserId;
+    const { toUserId } = req.params;
     if (!toUserId) {
         throwMissingToUserInConnectionRequestError();
     }
@@ -46,7 +45,7 @@ const validateSendConnectionRequestToUser = async (req) => {
         throwUserForbiddenError();
     }
 
-    const toUserId = req.params?.toUserId;
+    const { toUserId } = req.params;
     const fromUserId = req.user._id;
 
     if (!toUserId) {
@@ -62,7 +61,7 @@ const validateSendConnectionRequestToUser = async (req) => {
     if (fromUserId === toUserId) {
         throwSameToUserAndFromUserInConnectionRequestError();
     }
-    const status = req.params.status;
+    const { status } = req.params;
     const allowedStatuses = ['interested', 'ignored'];
     if (!allowedStatuses.includes(status)) {
         throwInvalidDataError('status', status);

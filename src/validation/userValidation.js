@@ -3,24 +3,24 @@ const mongoose = require('mongoose');
 const { throwInvalidDataError, throwMissingDataError } = require('../utils/errorUtils');
 
 const validateDeleteUserByEmail = (req) => {
-    const email = req.body.email;
+    const { email } = req.body;
     if (!email) {
         throwMissingDataError('email');
     }
 };
 
 const validateDeleteUserById = (req) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     validateUserIdHelper(userId);
 };
 
 const validateGetUserById = (req) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     validateUserIdHelper(userId);
 };
 
 const validateUpdateUser = (req) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     validateUserIdHelper(userId);
 };
 

@@ -10,8 +10,7 @@ const changePasswordAsSignedInUser = async (req, res) => {
         validateChangePasswordAsSignedInUser(req);
         const user = req.user;
 
-        const currentPassword = req.body.currentPassword;
-        const newPassword = req.body.newPassword;
+        const { currentPassword, newPassword } = req.body;
 
         const isPasswordValid = await user.validatePassword(currentPassword);
 

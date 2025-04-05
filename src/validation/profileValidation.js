@@ -7,8 +7,8 @@ const {
 const { validateUserIdHelper } = require('./userValidation');
 
 const validateChangePasswordAsSignedInUser = (req) => {
-    const currentPassword = req.body.currentPassword;
-    const newPassword = req.body.newPassword;
+    const { currentPassword, newPassword } = req.body;
+
     const user = req.user;
 
     if (!user) {
@@ -29,7 +29,7 @@ const validateChangePasswordAsSignedInUser = (req) => {
 };
 
 const validateUpdateUserProfile = (req) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     validateUserIdHelper(userId);
     const allowedFields = ['firstName', 'lastName', 'dob', 'gender', 'mobile', 'photoUrl', 'about', 'skills'];
     const isRequestValid = Object.keys(req.body).every((key) => allowedFields.includes(key));
