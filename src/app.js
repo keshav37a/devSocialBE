@@ -6,6 +6,7 @@ const { handleDBConnect } = require('./config/database');
 
 const { authRoutes } = require('./routes/authRoutes');
 const { profileRoutes } = require('./routes/profileRoutes');
+const { connectionRequestRoutes } = require('./routes/connectionRequestRoutes');
 const { userRoutes } = require('./routes/userRoutes');
 
 const { EXPRESS_PORT } = require('./config/keys');
@@ -32,4 +33,5 @@ app.use(cookieParser());
 
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
+app.use('/connection-request', connectionRequestRoutes);
 app.use('/user', userRoutes);

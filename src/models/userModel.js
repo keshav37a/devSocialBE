@@ -46,13 +46,19 @@ const userSchema = new Schema(
         },
         gender: {
             type: String,
-            enum: ['male', 'female', 'other'],
+            enum: {
+                values: ['male', 'female', 'other'],
+                message: 'Schema validation error. ${VALUE} is not a valid gender.',
+            },
             trim: true,
             lowercase: true,
         },
         type: {
             type: String,
-            enum: ['admin', 'customer'],
+            enum: {
+                values: ['admin', 'customer'],
+                message: 'Schema validation error. ${VALUE} is not a valid user type.',
+            },
             default: 'customer',
             trim: true,
             lowercase: true,

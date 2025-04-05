@@ -9,8 +9,7 @@ const {
 } = require('../utils/errorUtils');
 const { sendStandardResponse } = require('../utils/responseUtils');
 
-const { validateUserSignIn, validateUserSignUp } = require('../validation/userValidation');
-
+const { validateUserSignIn, validateUserSignUp } = require('../validation/authValidation');
 const { USER } = require('../config/keys');
 
 const signInUser = async (req, res) => {

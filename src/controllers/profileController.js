@@ -1,6 +1,6 @@
 const { hash } = require('bcrypt');
 const { throwIncorrectPasswordError, throwUserForbiddenError } = require('../utils/errorUtils');
-const { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } = require('../validation/userValidation');
+const { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } = require('../validation/profileValidation');
 
 const { USER } = require('../config/keys');
 const { sendStandardResponse } = require('../utils/responseUtils');
