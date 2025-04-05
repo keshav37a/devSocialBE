@@ -29,7 +29,7 @@ const validateUserIdHelper = (userId) => {
         throwMissingDataError('userId');
     }
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        throwInvalidDataError('userId');
+        throwInvalidDataError('userId', userId);
     }
 };
 

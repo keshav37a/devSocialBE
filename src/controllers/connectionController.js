@@ -1,10 +1,35 @@
 const { ConnectionRequestModel } = require('../models/connectionRequestModel');
-const { throwConnectionRequestNotFoundForTheseUsers } = require('../utils/errorUtils');
+const {
+    throwConnectionRequestNotFoundForThisConnectionRequestId,
+    throwConnectionRequestNotFoundForTheseUsers,
+} = require('../utils/errorUtils');
 const { sendStandardResponse } = require('../utils/responseUtils');
 const {
+    validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByUserId,
     validateSendConnectionRequestToUser,
 } = require('../validation/connectionRequestValidation');
+
+const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
+    try {
+        validateDeleteConnectionRequestByConnectionRequestId(req);
+        const connectionRequestId = req.params.connectionRequestId;
+        const connectionRequest = await ConnectionRequestModel.findByIdAndDelete(connectionRequestId);
+        if (!connectionRequest) {
+            throwConnectionRequestNotFoundForThisConnectionRequestId();
+        }
+        sendStandardResponse(res, {
+            message: 'Connection request deleted successfully',
+            data: {
+                connectionRequest: {
+                    _id: connectionRequest._id,
+                },
+            },
+        });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error });
+    }
+};
 
 const deleteConnectionRequestByUserId = async (req, res) => {
     try {
@@ -16,8 +41,12 @@ const deleteConnectionRequestByUserId = async (req, res) => {
             throwConnectionRequestNotFoundForTheseUsers();
         }
         sendStandardResponse(res, {
-            message: 'Request deleted successfully',
-            data: { connectionRequest: connectionRequest._id },
+            message: 'Connection request deleted successfully',
+            data: {
+                connectionRequest: {
+                    _id: connectionRequest._id,
+                },
+            },
         });
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error });
@@ -28,7 +57,7 @@ const getAllConnectionRequests = async (_, res) => {
     try {
         const allConnectionRequests = await ConnectionRequestModel.find({});
         sendStandardResponse(res, {
-            message: 'Request sent successfully',
+            message: 'Connection request sent successfully',
             data: { connectionRequests: allConnectionRequests },
         });
     } catch (error) {
@@ -41,11 +70,11 @@ const sendConnectionRequestToUser = async (req, res) => {
         await validateSendConnectionRequestToUser(req);
         const fromUserId = req.user._id;
         const toUserId = req.params.toUserId;
-        const status = 'interested';
+        const status = req.params.status;
         const newConnectionRequest = ConnectionRequestModel({ fromUserId, toUserId, status });
         await newConnectionRequest.save();
         sendStandardResponse(res, {
-            message: 'Request sent successfully',
+            message: 'Connection request sent successfully',
             data: { connectionRequest: newConnectionRequest },
         });
     } catch (error) {
@@ -54,6 +83,7 @@ const sendConnectionRequestToUser = async (req, res) => {
 };
 
 module.exports = {
+    deleteConnectionRequestByConnectionRequestId,
     deleteConnectionRequestByUserId,
     getAllConnectionRequests,
     sendConnectionRequestToUser,

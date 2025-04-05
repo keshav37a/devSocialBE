@@ -1,6 +1,7 @@
 const express = require('express');
 
 const {
+    deleteConnectionRequestByConnectionRequestId,
     deleteConnectionRequestByUserId,
     getAllConnectionRequests,
     sendConnectionRequestToUser,
@@ -13,9 +14,14 @@ const router = express.Router();
 /* Admin routes */
 router.get('/all', adminAuth, getAllConnectionRequests);
 router.delete('/delete/:toUserId', adminAuth, deleteConnectionRequestByUserId);
+router.delete(
+    '/delete/connection-request-id/:connectionRequestId',
+    adminAuth,
+    deleteConnectionRequestByConnectionRequestId
+);
 
 /* Customer routes */
-router.post('/send/interested/:toUserId', userAuth, sendConnectionRequestToUser);
+router.post('/send/:status/:toUserId', userAuth, sendConnectionRequestToUser);
 
 module.exports = {
     connectionRequestRoutes: router,

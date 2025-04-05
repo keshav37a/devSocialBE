@@ -7,7 +7,7 @@ const validateUserSignIn = (req) => {
         throwMissingDataError('email');
     }
     if (!validator.isEmail(email)) {
-        throwInvalidDataError('email');
+        throwInvalidDataError('email', email);
     }
     if (!password) {
         throwMissingDataError('password');
@@ -30,25 +30,25 @@ const validateUserSignUp = (req) => {
     }
 
     if (!validator.isEmail(email)) {
-        throwInvalidDataError('email');
+        throwInvalidDataError('email', email);
     }
     if (skills && skills.length > 5) {
         throwUserSkillCountError();
     }
     if (photoUrl && !validator.isURL(photoUrl)) {
-        throwInvalidDataError('photoUrl');
+        throwInvalidDataError('photoUrl', photoUrl);
     }
     if (dob && !validator.isDate(dob)) {
-        throwInvalidDataError('dob');
+        throwInvalidDataError('dob', dob);
     }
-    if (gender && !['male', 'female', 'other'].includes()) {
-        throwInvalidDataError('gender');
+    if (gender && !['male', 'female', 'other'].includes(gender)) {
+        throwInvalidDataError('gender', gender);
     }
     if (mobile && mobile.length < 10) {
-        throwInvalidDataError('mobile');
+        throwInvalidDataError('mobile', mobile);
     }
     if (about && about.length >= 300) {
-        throwInvalidDataError('about');
+        throwInvalidDataError('about', about);
     }
 };
 

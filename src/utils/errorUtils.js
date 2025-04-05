@@ -6,6 +6,12 @@ const throwConnectionRequestAlreadyExistsForTheseUsers = () => {
     });
 };
 
+const throwConnectionRequestNotFoundForThisConnectionRequestId = () => {
+    throw new Error(`API validation error. A connection request for this connection request id does not exist`, {
+        cause: REQUEST_STATUS.NOT_FOUND,
+    });
+};
+
 const throwConnectionRequestNotFoundForTheseUsers = () => {
     throw new Error(`API validation error. A connection request for these users does not exist`, {
         cause: REQUEST_STATUS.NOT_FOUND,
@@ -24,8 +30,8 @@ const throwIncorrectPasswordError = () => {
     });
 };
 
-const throwInvalidDataError = (invalidFieldName) => {
-    throw new Error(`API validation error. Invalid ${invalidFieldName}.`, {
+const throwInvalidDataError = (fieldName, invalidFieldValue) => {
+    throw new Error(`API validation error. Invalid ${fieldName}: ${invalidFieldValue}`, {
         cause: REQUEST_STATUS.BAD_REQUEST,
     });
 };
@@ -42,8 +48,14 @@ const throwInvalidUserProfileUpdateError = () => {
     });
 };
 
-const throwMissingDataError = (missingFieldName) => {
-    throw new Error(`API validation error. ${missingFieldName} missing`, {
+const throwMissingDataError = (missingData) => {
+    throw new Error(`API validation error. ${missingData} missing`, {
+        cause: REQUEST_STATUS.BAD_REQUEST,
+    });
+};
+
+const throwMissingConnectionRequestError = () => {
+    throw new Error(`API validation error. Connection request id missing in request`, {
         cause: REQUEST_STATUS.BAD_REQUEST,
     });
 };
@@ -56,6 +68,12 @@ const throwMissingToUserInConnectionRequestError = () => {
 
 const throwSameCurrentPasswordNewPasswordError = () => {
     throw new Error(`API validation error. New password can't be same as current password.`, {
+        cause: REQUEST_STATUS.BAD_REQUEST,
+    });
+};
+
+const throwSameToUserAndFromUserInConnectionRequestError = () => {
+    throw new Error(`API validation error. A connection request can't have the same from user and to user id`, {
         cause: REQUEST_STATUS.BAD_REQUEST,
     });
 };
@@ -86,15 +104,18 @@ const throwUserNotFoundError = (fieldNotFoundName) => {
 
 module.exports = {
     throwConnectionRequestAlreadyExistsForTheseUsers,
+    throwConnectionRequestNotFoundForThisConnectionRequestId,
     throwConnectionRequestNotFoundForTheseUsers,
     throwEmailAlreadyInUseError,
     throwIncorrectPasswordError,
     throwInvalidDataError,
     throwInvalidTokenError,
     throwInvalidUserProfileUpdateError,
+    throwMissingConnectionRequestError,
     throwMissingDataError,
     throwMissingToUserInConnectionRequestError,
     throwSameCurrentPasswordNewPasswordError,
+    throwSameToUserAndFromUserInConnectionRequestError,
     throwTokenNotFoundError,
     throwUserForbiddenError,
     throwUserNotFoundError,
