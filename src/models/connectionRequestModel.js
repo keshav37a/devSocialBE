@@ -24,6 +24,8 @@ const connectionRequestSchema = new Schema(
     { timestamps: true }
 );
 
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
 connectionRequestSchema.pre('save', function (next) {
     if (this.fromUserId.equals(this.toUserId)) {
         throw new Error("Schema validation error. fromUserId and toUserId can't be same.");

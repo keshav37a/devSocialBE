@@ -12,6 +12,21 @@ const throwConnectionRequestNotFoundForThisConnectionRequestId = () => {
     });
 };
 
+const throwUserIdNotMatchingWithToUserId = () => {
+    throw new Error(
+        `API validation error. The logged in userId does not match with the toUserId in the connectionRequest`,
+        {
+            cause: REQUEST_STATUS.BAD_REQUEST,
+        }
+    );
+};
+
+const throwConnectionRequestAlreadyReviewedError = () => {
+    throw new Error(`API validation error. The connection request has already been reviewed`, {
+        cause: REQUEST_STATUS.NOT_FOUND,
+    });
+};
+
 const throwConnectionRequestNotFoundForTheseUsers = () => {
     throw new Error(`API validation error. A connection request for these users does not exist`, {
         cause: REQUEST_STATUS.NOT_FOUND,
@@ -104,6 +119,7 @@ const throwUserNotFoundError = (fieldNotFoundName) => {
 
 module.exports = {
     throwConnectionRequestAlreadyExistsForTheseUsers,
+    throwConnectionRequestAlreadyReviewedError,
     throwConnectionRequestNotFoundForThisConnectionRequestId,
     throwConnectionRequestNotFoundForTheseUsers,
     throwEmailAlreadyInUseError,
@@ -117,6 +133,7 @@ module.exports = {
     throwSameCurrentPasswordNewPasswordError,
     throwSameToUserAndFromUserInConnectionRequestError,
     throwTokenNotFoundError,
+    throwUserIdNotMatchingWithToUserId,
     throwUserForbiddenError,
     throwUserNotFoundError,
     throwUserSkillCountError,

@@ -2,12 +2,15 @@ const mongoose = require('mongoose');
 const { ConnectionRequestModel } = require('../models/connectionRequestModel');
 const {
     throwConnectionRequestAlreadyExistsForTheseUsers,
+    throwConnectionRequestAlreadyReviewedError,
     throwInvalidDataError,
     throwMissingConnectionRequestError,
     throwMissingToUserInConnectionRequestError,
     throwSameToUserAndFromUserInConnectionRequestError,
     throwUserForbiddenError,
     throwUserNotFoundError,
+    throwConnectionRequestNotFoundForThisConnectionRequestId,
+    throwUserIdNotMatchingWithToUserId,
 } = require('../utils/errorUtils');
 const { UserModel } = require('../models/userModel');
 
@@ -39,7 +42,38 @@ const validateDeleteConnectionRequestByUserId = async (req) => {
     }
 };
 
-const validateSendConnectionRequestToUser = async (req) => {
+const validateGetAllConnectionReviewRequestsByUser = (req) => {
+    const user = req.user;
+    if (!user) {
+        throwUserForbiddenError();
+    }
+};
+
+const validateReviewConnectionRequest = async (req) => {
+    const user = req.user;
+    if (!user) {
+        throwUserForbiddenError();
+    }
+    const reviewerUserId = user._id;
+    const { status, connectionRequestId } = req.params;
+    const allowedStatuses = ['accepted', 'rejected'];
+    if (!allowedStatuses.includes(status)) {
+        throwInvalidDataError('status', status);
+    }
+    const connectionRequest = await ConnectionRequestModel.findById(connectionRequestId);
+    if (!connectionRequest) {
+        throwConnectionRequestNotFoundForThisConnectionRequestId();
+    }
+    if (!connectionRequest.toUserId.equals(reviewerUserId)) {
+        throwUserIdNotMatchingWithToUserId();
+    }
+    if (allowedStatuses.includes(connectionRequest.status)) {
+        throwConnectionRequestAlreadyReviewedError();
+    }
+    return connectionRequest;
+};
+
+const validateSendConnectionRequest = async (req) => {
     const user = req.user;
     if (!user) {
         throwUserForbiddenError();
@@ -81,5 +115,7 @@ const validateSendConnectionRequestToUser = async (req) => {
 module.exports = {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByUserId,
-    validateSendConnectionRequestToUser,
+    validateGetAllConnectionReviewRequestsByUser,
+    validateReviewConnectionRequest,
+    validateSendConnectionRequest,
 };
