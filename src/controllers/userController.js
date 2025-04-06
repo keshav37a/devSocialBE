@@ -69,6 +69,10 @@ const getUserFeed = async (req, res) => {
     try {
         validateIsUserSignedIn(req);
         const { _id: loggedInUserId } = req.user;
+        const page = Number(req.query.page) || 1;
+        let limit = Number(req.query.limit) || 10;
+        limit = limit > 50 ? 50 : limit;
+        const skip = (page - 1) * limit;
         const connectionRequestsToBeExcluded = await ConnectionRequestModel.find({
             $or: [{ fromUser: loggedInUserId }, { toUser: loggedInUserId }],
         });
@@ -78,7 +82,10 @@ const getUserFeed = async (req, res) => {
         );
         const feed = await UserModel.find({
             $and: [{ _id: { $nin: excludedUserIds } }, { _id: { $ne: loggedInUserId } }],
-        }).select(USER.CUSTOMER_FIELDS);
+        })
+            .select(USER.CUSTOMER_FIELDS)
+            .skip(Number(skip))
+            .limit(Number(limit));
         sendStandardResponse(res, { message: 'Feed fetched successfully', data: { feed } });
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { feed: null }, error });
