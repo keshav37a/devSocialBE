@@ -15,7 +15,7 @@ const deleteUserByEmail = async (req, res) => {
         const { email } = req.body;
         const deletedUser = await UserModel.findOneAndDelete({ email });
         if (!deletedUser) {
-            throwUserNotFoundError('email');
+            throwUserNotFoundError('email', email);
         }
         sendStandardResponse(res, { message: 'User deleted successfuly', data: { user: deletedUser } });
     } catch (error) {
@@ -29,7 +29,7 @@ const deleteUserById = async (req, res) => {
         const { userId } = req.params;
         const deletedUser = await UserModel.findByIdAndDelete(userId);
         if (!deletedUser) {
-            throwUserNotFoundError('userId');
+            throwUserNotFoundError('userId', userId);
         }
         sendStandardResponse(res, { message: 'User deleted successfuly', data: { user: deletedUser } });
     } catch (error) {
@@ -52,7 +52,7 @@ const getUserById = async (req, res) => {
         const { userId } = req.params;
         const user = await UserModel.findById(userId);
         if (!user) {
-            throwUserNotFoundError('userId');
+            throwUserNotFoundError('userId', userId);
         }
         sendStandardResponse(res, { message: 'User fetched successfully', data: { user } });
     } catch (error) {
@@ -71,7 +71,7 @@ const updateUser = async (req, res) => {
             { new: true }
         );
         if (!updatedUser) {
-            throwUserNotFoundError('userId');
+            throwUserNotFoundError('userId', userId);
         }
         sendStandardResponse(res, { message: 'User updated successfully', data: { user: updatedUser } });
     } catch (error) {

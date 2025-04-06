@@ -3,14 +3,16 @@ const { ConnectionRequestModel } = require('../models/connectionRequestModel');
 const {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestAlreadyReviewedError,
+    throwConnectionRequestNotFoundForThisConnectionRequestId,
     throwInvalidDataError,
     throwMissingConnectionRequestError,
+    throwMissingDataError,
+    throwMissingFromUserInConnectionRequestError,
     throwMissingToUserInConnectionRequestError,
     throwSameToUserAndFromUserInConnectionRequestError,
     throwUserForbiddenError,
     throwUserNotFoundError,
-    throwConnectionRequestNotFoundForThisConnectionRequestId,
-    throwUserIdNotMatchingWithToUserId,
+    throwUserIdNotMatchingWithToUser,
 } = require('../utils/errorUtils');
 const { UserModel } = require('../models/userModel');
 
@@ -28,21 +30,33 @@ const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
     }
 };
 
-const validateDeleteConnectionRequestByUserId = async (req) => {
-    const user = req.user;
-    if (!user) {
-        throwUserForbiddenError();
+const validateDeleteConnectionRequestByEmail = (req) => {
+    const { fromUserEmail, toUserEmail } = req.body;
+    if (!fromUserEmail) {
+        throwMissingDataError('fromUserEmail');
     }
-    const { toUserId } = req.params;
+    if (!toUserEmail) {
+        throwMissingDataError('toUserEmail');
+    }
+};
+
+const validateDeleteConnectionRequestByUserId = (req) => {
+    const { fromUserId, toUserId } = req.body;
+    if (!fromUserId) {
+        throwMissingFromUserInConnectionRequestError();
+    }
     if (!toUserId) {
         throwMissingToUserInConnectionRequestError();
+    }
+    if (!mongoose.Types.ObjectId.isValid(fromUserId)) {
+        throwInvalidDataError('userId', fromUserId);
     }
     if (!mongoose.Types.ObjectId.isValid(toUserId)) {
         throwInvalidDataError('userId', toUserId);
     }
 };
 
-const validateGetAllConnectionReviewRequestsByUser = (req) => {
+const validateGetPendingConnectionRequestsForReviewByUser = (req) => {
     const user = req.user;
     if (!user) {
         throwUserForbiddenError();
@@ -54,7 +68,7 @@ const validateReviewConnectionRequest = async (req) => {
     if (!user) {
         throwUserForbiddenError();
     }
-    const reviewerUserId = user._id;
+    const loggedInUserId = user._id;
     const { status, connectionRequestId } = req.params;
     const allowedStatuses = ['accepted', 'rejected'];
     if (!allowedStatuses.includes(status)) {
@@ -64,8 +78,8 @@ const validateReviewConnectionRequest = async (req) => {
     if (!connectionRequest) {
         throwConnectionRequestNotFoundForThisConnectionRequestId();
     }
-    if (!connectionRequest.toUserId.equals(reviewerUserId)) {
-        throwUserIdNotMatchingWithToUserId();
+    if (!connectionRequest.toUser.equals(loggedInUserId)) {
+        throwUserIdNotMatchingWithToUser();
     }
     if (allowedStatuses.includes(connectionRequest.status)) {
         throwConnectionRequestAlreadyReviewedError();
@@ -79,20 +93,20 @@ const validateSendConnectionRequest = async (req) => {
         throwUserForbiddenError();
     }
 
-    const { toUserId } = req.params;
-    const fromUserId = req.user._id;
+    const { toUser } = req.params;
+    const fromUser = req.user._id;
 
-    if (!toUserId) {
+    if (!toUser) {
         throwMissingToUserInConnectionRequestError();
     }
-    if (!mongoose.Types.ObjectId.isValid(toUserId)) {
-        throwInvalidDataError('userId', toUserId);
+    if (!mongoose.Types.ObjectId.isValid(toUser)) {
+        throwInvalidDataError('userId', toUser);
     }
-    const isToUserExists = await UserModel.findById(toUserId);
+    const isToUserExists = await UserModel.findById(toUser);
     if (!isToUserExists) {
         throwUserNotFoundError('userId');
     }
-    if (fromUserId === toUserId) {
+    if (fromUser.equals(toUser)) {
         throwSameToUserAndFromUserInConnectionRequestError();
     }
     const { status } = req.params;
@@ -103,8 +117,8 @@ const validateSendConnectionRequest = async (req) => {
 
     const existingConnectionRequest = await ConnectionRequestModel.findOne({
         $or: [
-            { fromUserId, toUserId },
-            { fromUserId: toUserId, toUserId: fromUserId },
+            { fromUser, toUser },
+            { fromUser: toUser, toUser: fromUser },
         ],
     });
     if (existingConnectionRequest) {
@@ -114,8 +128,9 @@ const validateSendConnectionRequest = async (req) => {
 
 module.exports = {
     validateDeleteConnectionRequestByConnectionRequestId,
+    validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
-    validateGetAllConnectionReviewRequestsByUser,
+    validateGetPendingConnectionRequestsForReviewByUser,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
 };

@@ -18,7 +18,7 @@ const signInUser = async (req, res) => {
         const { email, password } = req.body;
         const user = await UserModel.findOne({ email });
         if (!user) {
-            throwUserNotFoundError('email');
+            throwUserNotFoundError('email', email);
         }
 
         const isPasswordMatch = await user.validatePassword(password);

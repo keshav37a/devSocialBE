@@ -25,7 +25,7 @@ const adminAuth = async (req, res, next) => {
 
         const user = await UserModel.findById(userId);
         if (!user) {
-            throwUserNotFoundError('userId');
+            throwUserNotFoundError('userId', userId);
         }
         if (user.type !== 'admin') {
             throwUserForbiddenError();
@@ -50,7 +50,7 @@ const userAuth = async (req, res, next) => {
 
         const user = await UserModel.findById(userId);
         if (!user) {
-            throwUserNotFoundError('userId');
+            throwUserNotFoundError('userId', userId);
         }
         req.user = user;
         next();

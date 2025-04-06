@@ -12,9 +12,9 @@ const throwConnectionRequestNotFoundForThisConnectionRequestId = () => {
     });
 };
 
-const throwUserIdNotMatchingWithToUserId = () => {
+const throwUserIdNotMatchingWithToUser = () => {
     throw new Error(
-        `API validation error. The logged in userId does not match with the toUserId in the connectionRequest`,
+        `API validation error. The logged in userId does not match with the toUser in the connectionRequest`,
         {
             cause: REQUEST_STATUS.BAD_REQUEST,
         }
@@ -75,8 +75,14 @@ const throwMissingConnectionRequestError = () => {
     });
 };
 
+const throwMissingFromUserInConnectionRequestError = () => {
+    throw new Error(`API validation error. fromUser missing in request`, {
+        cause: REQUEST_STATUS.NOT_FOUND,
+    });
+};
+
 const throwMissingToUserInConnectionRequestError = () => {
-    throw new Error(`API validation error. Target user missing in request`, {
+    throw new Error(`API validation error. toUser missing in request`, {
         cause: REQUEST_STATUS.NOT_FOUND,
     });
 };
@@ -111,8 +117,8 @@ const throwUserForbiddenError = () => {
     });
 };
 
-const throwUserNotFoundError = (fieldNotFoundName) => {
-    throw new Error(`API validation error. User not found. ${fieldNotFoundName} not present in DB`, {
+const throwUserNotFoundError = (fieldName, fieldNotFoundValue) => {
+    throw new Error(`API validation error. User not found. ${fieldName}: ${fieldNotFoundValue} not present in DB`, {
         cause: REQUEST_STATUS.NOT_FOUND,
     });
 };
@@ -129,11 +135,12 @@ module.exports = {
     throwInvalidUserProfileUpdateError,
     throwMissingConnectionRequestError,
     throwMissingDataError,
+    throwMissingFromUserInConnectionRequestError,
     throwMissingToUserInConnectionRequestError,
     throwSameCurrentPasswordNewPasswordError,
     throwSameToUserAndFromUserInConnectionRequestError,
     throwTokenNotFoundError,
-    throwUserIdNotMatchingWithToUserId,
+    throwUserIdNotMatchingWithToUser,
     throwUserForbiddenError,
     throwUserNotFoundError,
     throwUserSkillCountError,

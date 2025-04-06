@@ -2,13 +2,15 @@ const { Schema, model } = require('mongoose');
 
 const connectionRequestSchema = new Schema(
     {
-        fromUserId: {
+        fromUser: {
             type: Schema.Types.ObjectId,
             required: true,
+            ref: 'User',
         },
-        toUserId: {
+        toUser: {
             type: Schema.Types.ObjectId,
             required: true,
+            ref: 'User',
         },
         status: {
             type: String,
@@ -24,11 +26,11 @@ const connectionRequestSchema = new Schema(
     { timestamps: true }
 );
 
-connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+connectionRequestSchema.index({ fromUser: 1, toUser: 1 });
 
 connectionRequestSchema.pre('save', function (next) {
-    if (this.fromUserId.equals(this.toUserId)) {
-        throw new Error("Schema validation error. fromUserId and toUserId can't be same.");
+    if (this.fromUser.equals(this.toUser)) {
+        throw new Error("Schema validation error. fromUser and toUser can't be same.");
     }
     next();
 });

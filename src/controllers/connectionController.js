@@ -1,13 +1,17 @@
 const { ConnectionRequestModel } = require('../models/connectionRequestModel');
+const { UserModel } = require('../models/userModel');
+
 const {
     throwConnectionRequestNotFoundForThisConnectionRequestId,
     throwConnectionRequestNotFoundForTheseUsers,
+    throwUserNotFoundError,
 } = require('../utils/errorUtils');
 const { sendStandardResponse } = require('../utils/responseUtils');
 const {
     validateDeleteConnectionRequestByConnectionRequestId,
+    validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
-    validateGetAllConnectionReviewRequestsByUser,
+    validateGetPendingConnectionRequestsForReviewByUser,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
 } = require('../validation/connectionRequestValidation');
@@ -33,12 +37,46 @@ const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     }
 };
 
+const deleteConnectionRequestByEmail = async (req, res) => {
+    try {
+        validateDeleteConnectionRequestByEmail(req);
+        const { fromUserEmail, toUserEmail } = req.body;
+        const fromUser = await UserModel.findOne({ email: fromUserEmail });
+        if (!fromUser) {
+            throwUserNotFoundError('email', fromUserEmail);
+        }
+        const toUser = await UserModel.findOne({ email: toUserEmail });
+        if (!toUser) {
+            throwUserNotFoundError('email', toUserEmail);
+        }
+        const deletedConnectionRequest = await ConnectionRequestModel.findOneAndDelete({
+            fromUser: fromUser._id,
+            toUser: toUser._id,
+        });
+        if (!deletedConnectionRequest) {
+            throwConnectionRequestNotFoundForTheseUsers();
+        }
+        sendStandardResponse(res, {
+            message: 'Connection request deleted successfully',
+            data: {
+                connectionRequest: {
+                    _id: deletedConnectionRequest._id,
+                },
+            },
+        });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error });
+    }
+};
+
 const deleteConnectionRequestByUserId = async (req, res) => {
     try {
         validateDeleteConnectionRequestByUserId(req);
-        const fromUserId = req.user._id;
-        const { toUserId } = req.params;
-        const connectionRequest = await ConnectionRequestModel.findOneAndDelete({ fromUserId, toUserId });
+        const { fromUserId, toUserId } = req.body;
+        const connectionRequest = await ConnectionRequestModel.findOneAndDelete({
+            fromUser: fromUserId,
+            toUser: toUserId,
+        });
         if (!connectionRequest) {
             throwConnectionRequestNotFoundForTheseUsers();
         }
@@ -57,7 +95,9 @@ const deleteConnectionRequestByUserId = async (req, res) => {
 
 const getAllConnectionRequests = async (_, res) => {
     try {
-        const allConnectionRequests = await ConnectionRequestModel.find({});
+        const allConnectionRequests = await ConnectionRequestModel.find({})
+            .populate('fromUser', ['firstName', 'lastName'])
+            .populate('toUser', ['firstName', 'lastName']);
         sendStandardResponse(res, {
             message: 'Connection requests fetched successfully',
             data: { connectionRequests: allConnectionRequests },
@@ -67,11 +107,15 @@ const getAllConnectionRequests = async (_, res) => {
     }
 };
 
-const getAllConnectionReviewRequestsByUser = async (req, res) => {
+const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
+    /* get pending connection requests for review  */
     try {
-        validateGetAllConnectionReviewRequestsByUser(req);
-        const userId = req.user._id;
-        const allConnectionRequests = await ConnectionRequestModel.find({ toUserId: userId });
+        validateGetPendingConnectionRequestsForReviewByUser(req);
+        const toUser = req.user._id;
+        const allConnectionRequests = await ConnectionRequestModel.find({ toUser, status: 'interested' }).populate(
+            'fromUser',
+            ['firstName', 'lastName']
+        );
         sendStandardResponse(res, {
             message: 'Connection requests fetched successfully',
             data: { connectionRequests: allConnectionRequests },
@@ -84,9 +128,9 @@ const getAllConnectionReviewRequestsByUser = async (req, res) => {
 const sendConnectionRequest = async (req, res) => {
     try {
         await validateSendConnectionRequest(req);
-        const { status, toUserId } = req.params;
-        const fromUserId = req.user._id;
-        const newConnectionRequest = ConnectionRequestModel({ fromUserId, toUserId, status });
+        const { status, toUser } = req.params;
+        const fromUser = req.user._id;
+        const newConnectionRequest = ConnectionRequestModel({ fromUser, toUser, status });
         await newConnectionRequest.save();
         sendStandardResponse(res, {
             message: 'Connection request sent successfully',
@@ -115,9 +159,10 @@ const reviewConnectionRequest = async (req, res) => {
 
 module.exports = {
     deleteConnectionRequestByConnectionRequestId,
+    deleteConnectionRequestByEmail,
     deleteConnectionRequestByUserId,
     getAllConnectionRequests,
-    getAllConnectionReviewRequestsByUser,
+    getPendingConnectionRequestsForReviewByUser,
     reviewConnectionRequest,
     sendConnectionRequest,
 };
