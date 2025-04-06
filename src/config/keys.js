@@ -31,5 +31,7 @@ module.exports = {
     },
     USER: {
         PASSWORD_SALT_ROUNDS: 10,
+        CUSTOMER_FIELDS: ['firstName', 'lastName', 'photoUrl', 'age', 'gender', 'about', 'skills'],
+        ADMIN_FIELDS: ['firstName', 'lastName', 'photoUrl', 'age', 'gender', 'about', 'skills', 'email'],
     },
 };

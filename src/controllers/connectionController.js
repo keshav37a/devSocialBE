@@ -7,6 +7,7 @@ const {
     throwUserNotFoundError,
 } = require('../utils/errorUtils');
 const { sendStandardResponse } = require('../utils/responseUtils');
+
 const {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
@@ -15,6 +16,8 @@ const {
     validateSendConnectionRequest,
 } = require('../validation/connectionRequestValidation');
 const { validateIsUserSignedIn } = require('../validation/userValidation');
+
+const { USER } = require('../config/keys');
 
 const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     try {
@@ -96,8 +99,8 @@ const deleteConnectionRequestByUserId = async (req, res) => {
 const getAllConnectionRequests = async (_, res) => {
     try {
         const allConnectionRequests = await ConnectionRequestModel.find({})
-            .populate('fromUser', ['firstName', 'lastName'])
-            .populate('toUser', ['firstName', 'lastName']);
+            .populate('fromUser', USER.ADMIN_FIELDS)
+            .populate('toUser', USER.ADMIN_FIELDS);
         sendStandardResponse(res, {
             message: 'Connection requests fetched successfully',
             data: { connectionRequests: allConnectionRequests },
@@ -114,7 +117,7 @@ const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
         const toUser = req.user._id;
         const allConnectionRequests = await ConnectionRequestModel.find({ toUser, status: 'interested' }).populate(
             'fromUser',
-            ['firstName', 'lastName']
+            USER.CUSTOMER_FIELDS
         );
         sendStandardResponse(res, {
             message: 'Connection requests fetched successfully',
@@ -135,8 +138,8 @@ const getConnectionsByUser = async (req, res) => {
                 { fromUser: userId, status: 'accepted' },
             ],
         })
-            .populate('fromUser', ['firstName', 'lastName'])
-            .populate('toUser', ['firstName', 'lastName']);
+            .populate('fromUser', USER.CUSTOMER_FIELDS)
+            .populate('toUser', USER.CUSTOMER_FIELDS);
 
         const responseData = connections.map(({ toUser, fromUser }) => (toUser._id.equals(userId) ? fromUser : toUser));
         sendStandardResponse(res, {
