@@ -5,9 +5,10 @@ const {
     deleteConnectionRequestByEmail,
     deleteConnectionRequestByUserId,
     getAllConnectionRequests,
-    sendConnectionRequest,
+    getConnectionsByUser,
     getPendingConnectionRequestsForReviewByUser,
     reviewConnectionRequest,
+    sendConnectionRequest,
 } = require('../controllers/connectionController');
 
 const { userAuth, adminAuth } = require('../middlewares/auth');
@@ -27,6 +28,7 @@ router.delete(
 /* Customer routes */
 router.post('/send/:status/:toUser', userAuth, sendConnectionRequest);
 router.get('/review-requests', userAuth, getPendingConnectionRequestsForReviewByUser);
+router.get('/connections', userAuth, getConnectionsByUser);
 router.post('/review/:status/:connectionRequestId', userAuth, reviewConnectionRequest);
 
 module.exports = {

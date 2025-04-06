@@ -10,17 +10,14 @@ const {
     throwMissingFromUserInConnectionRequestError,
     throwMissingToUserInConnectionRequestError,
     throwSameToUserAndFromUserInConnectionRequestError,
-    throwUserForbiddenError,
     throwUserNotFoundError,
     throwUserIdNotMatchingWithToUser,
 } = require('../utils/errorUtils');
 const { UserModel } = require('../models/userModel');
+const { validateIsUserSignedIn } = require('./userValidation');
 
 const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
-    const user = req.user;
-    if (!user) {
-        throwUserForbiddenError();
-    }
+    validateIsUserSignedIn();
     const { connectionRequestId } = req.params;
     if (!connectionRequestId) {
         throwMissingConnectionRequestError();
@@ -56,18 +53,9 @@ const validateDeleteConnectionRequestByUserId = (req) => {
     }
 };
 
-const validateGetPendingConnectionRequestsForReviewByUser = (req) => {
-    const user = req.user;
-    if (!user) {
-        throwUserForbiddenError();
-    }
-};
-
 const validateReviewConnectionRequest = async (req) => {
     const user = req.user;
-    if (!user) {
-        throwUserForbiddenError();
-    }
+    validateIsUserSignedIn(req);
     const loggedInUserId = user._id;
     const { status, connectionRequestId } = req.params;
     const allowedStatuses = ['accepted', 'rejected'];
@@ -88,10 +76,7 @@ const validateReviewConnectionRequest = async (req) => {
 };
 
 const validateSendConnectionRequest = async (req) => {
-    const user = req.user;
-    if (!user) {
-        throwUserForbiddenError();
-    }
+    validateIsUserSignedIn(req);
 
     const { toUser } = req.params;
     const fromUser = req.user._id;
@@ -130,7 +115,6 @@ module.exports = {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
-    validateGetPendingConnectionRequestsForReviewByUser,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
 };

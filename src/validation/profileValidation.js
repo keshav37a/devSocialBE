@@ -8,21 +8,17 @@ const { validateUserIdHelper } = require('./userValidation');
 
 const validateChangePasswordAsSignedInUser = (req) => {
     const { currentPassword, newPassword } = req.body;
-
     const user = req.user;
 
     if (!user) {
         throwUserForbiddenError();
     }
-
     if (!currentPassword) {
         throwMissingDataError('Old password');
     }
-
     if (!newPassword) {
         throwMissingDataError('New password');
     }
-
     if (currentPassword === newPassword) {
         throwSameCurrentPasswordNewPasswordError();
     }

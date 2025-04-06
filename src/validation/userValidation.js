@@ -11,12 +11,21 @@ const validateDeleteUserByEmail = (req) => {
 
 const validateDeleteUserById = (req) => {
     const { userId } = req.params;
+    validateIsUserSignedIn(req);
     validateUserIdHelper(userId);
 };
 
 const validateGetUserById = (req) => {
     const { userId } = req.params;
+    validateIsUserSignedIn(req);
     validateUserIdHelper(userId);
+};
+
+const validateIsUserSignedIn = (req) => {
+    const user = req.user;
+    if (!user) {
+        throwUserForbiddenError();
+    }
 };
 
 const validateUpdateUser = (req) => {
@@ -34,6 +43,7 @@ const validateUserIdHelper = (userId) => {
 };
 
 module.exports = {
+    validateIsUserSignedIn,
     validateDeleteUserByEmail,
     validateDeleteUserById,
     validateGetUserById,

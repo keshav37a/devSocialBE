@@ -11,10 +11,10 @@ const {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
-    validateGetPendingConnectionRequestsForReviewByUser,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
 } = require('../validation/connectionRequestValidation');
+const { validateIsUserSignedIn } = require('../validation/userValidation');
 
 const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     try {
@@ -110,7 +110,7 @@ const getAllConnectionRequests = async (_, res) => {
 const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
     /* get pending connection requests for review  */
     try {
-        validateGetPendingConnectionRequestsForReviewByUser(req);
+        validateIsUserSignedIn(req);
         const toUser = req.user._id;
         const allConnectionRequests = await ConnectionRequestModel.find({ toUser, status: 'interested' }).populate(
             'fromUser',
@@ -122,6 +122,29 @@ const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
         });
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error });
+    }
+};
+
+const getConnectionsByUser = async (req, res) => {
+    try {
+        validateIsUserSignedIn(req);
+        const { _id: userId } = req.user;
+        const connections = await ConnectionRequestModel.find({
+            $or: [
+                { toUser: userId, status: 'accepted' },
+                { fromUser: userId, status: 'accepted' },
+            ],
+        })
+            .populate('fromUser', ['firstName', 'lastName'])
+            .populate('toUser', ['firstName', 'lastName']);
+
+        const responseData = connections.map(({ toUser, fromUser }) => (toUser._id.equals(userId) ? fromUser : toUser));
+        sendStandardResponse(res, {
+            message: 'Connections fetched successfully',
+            data: { connections: responseData },
+        });
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connections: null }, error });
     }
 };
 
@@ -162,6 +185,7 @@ module.exports = {
     deleteConnectionRequestByEmail,
     deleteConnectionRequestByUserId,
     getAllConnectionRequests,
+    getConnectionsByUser,
     getPendingConnectionRequestsForReviewByUser,
     reviewConnectionRequest,
     sendConnectionRequest,
