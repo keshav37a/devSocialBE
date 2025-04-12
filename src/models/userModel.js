@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const { Schema, model } = require('mongoose');
 const validator = require('validator');
 
-const { JWT_TOKEN_SECRET_KEY } = require('../config/keys');
-
 const userSchema = new Schema(
     {
         firstName: {
@@ -96,7 +94,7 @@ const userSchema = new Schema(
 
 userSchema.methods.getJWT = async function () {
     const user = this;
-    const token = await jwt.sign({ _id: user._id }, JWT_TOKEN_SECRET_KEY, {
+    const token = await jwt.sign({ _id: user._id }, process.env.JWT_TOKEN_SECRET_KEY, {
         expiresIn: '7d',
     });
     return token;

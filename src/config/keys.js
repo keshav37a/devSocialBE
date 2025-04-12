@@ -1,8 +1,6 @@
 module.exports = {
-    CONNECTION_URI: process.env.CONNECTION_URI,
-    DATABASE_NAME: process.env.DATABASE_NAME,
     EXPRESS_PORT: process.env.EXPRESS_PORT,
-    JWT_TOKEN_SECRET_KEY: process.env.JWT_TOKEN_SECRET_KEY,
+    FRONTEND_DEV_URL: process.env.FRONTEND_DEV_URL,
     REQUEST_STATUS: {
         SUCCESS: {
             statusCode: 200,

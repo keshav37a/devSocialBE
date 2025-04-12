@@ -1,4 +1,5 @@
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
 
@@ -9,7 +10,7 @@ const { profileRoutes } = require('./routes/profileRoutes');
 const { connectionRequestRoutes } = require('./routes/connectionRequestRoutes');
 const { userRoutes } = require('./routes/userRoutes');
 
-const { EXPRESS_PORT } = require('./config/keys');
+const { EXPRESS_PORT, FRONTEND_DEV_URL } = require('./config/keys');
 
 const app = express();
 
@@ -30,6 +31,14 @@ app.use(
     })
 );
 app.use(cookieParser());
+
+app.use(
+    cors({
+        origin: FRONTEND_DEV_URL,
+        optionsSuccessStatus: 200,
+        credentials: true,
+    })
+);
 
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
