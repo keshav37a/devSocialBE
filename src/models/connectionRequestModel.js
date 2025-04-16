@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require('mongoose')
 
 const connectionRequestSchema = new Schema(
     {
@@ -24,19 +24,19 @@ const connectionRequestSchema = new Schema(
         },
     },
     { timestamps: true }
-);
+)
 
-connectionRequestSchema.index({ fromUser: 1, toUser: 1 });
+connectionRequestSchema.index({ fromUser: 1, toUser: 1 })
 
 connectionRequestSchema.pre('save', function (next) {
     if (this.fromUser.equals(this.toUser)) {
-        throw new Error("Schema validation error. fromUser and toUser can't be same.");
+        throw new Error("Schema validation error. fromUser and toUser can't be same.")
     }
-    next();
-});
+    next()
+})
 
-const ConnectionRequestModel = model('ConnectionRequest', connectionRequestSchema);
+const ConnectionRequestModel = model('ConnectionRequest', connectionRequestSchema)
 
 module.exports = {
     ConnectionRequestModel,
-};
+}

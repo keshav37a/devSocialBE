@@ -1,62 +1,63 @@
-const { hash } = require('bcrypt');
+const { hash } = require('bcrypt')
 
-const { UserModel } = require('../models/userModel');
+const { UserModel } = require('#Models/userModel')
+
+const { USER } = require('#Config/keys')
 
 const {
     throwEmailAlreadyInUseError,
     throwIncorrectPasswordError,
     throwUserNotFoundError,
-} = require('../utils/errorUtils');
-const { sendStandardResponse } = require('../utils/responseUtils');
+} = require('#Utils/errorUtils')
+const { sendStandardResponse } = require('#Utils/responseUtils')
 
-const { validateUserSignIn, validateUserSignUp } = require('../validation/authValidation');
-const { USER } = require('../config/keys');
+const { validateUserSignIn, validateUserSignUp } = require('#Validations/authValidation')
 
 const signInUser = async (req, res) => {
     try {
-        validateUserSignIn(req);
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ email });
+        validateUserSignIn(req)
+        const { email, password } = req.body
+        const user = await UserModel.findOne({ email })
         if (!user) {
-            throwUserNotFoundError('email', email);
+            throwUserNotFoundError('email', email)
         }
 
-        const isPasswordMatch = await user.validatePassword(password);
+        const isPasswordMatch = await user.validatePassword(password)
         if (!isPasswordMatch) {
-            throwIncorrectPasswordError();
+            throwIncorrectPasswordError()
         }
 
-        const token = await user.getJWT();
-        user.password = null;
-        res.cookie('token', token);
-        sendStandardResponse(res, { message: 'User authenticated', data: { user } });
+        const token = await user.getJWT()
+        user.password = null
+        res.cookie('token', token)
+        sendStandardResponse(res, { message: 'User authenticated', data: { user } })
     } catch (error) {
-        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
-};
+}
 
-const signOutUser = async (_, res) => {
+const signOutUser = (_, res) => {
     try {
         res.cookie('token', null, {
             expires: new Date(Date.now()),
-        });
-        sendStandardResponse(res, { message: 'User signed out successfully', data: { user: null } });
+        })
+        sendStandardResponse(res, { message: 'User signed out successfully', data: { user: null } })
     } catch (error) {
-        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
-};
+}
 
 const signUpNewUser = async (req, res) => {
     try {
-        validateUserSignUp(req);
-        const { firstName, lastName, email, password, dob, gender, type, mobile, photoUrl, about, skills } = req.body;
-        const existingUser = await UserModel.findOne({ email });
+        validateUserSignUp(req)
+        const { firstName, lastName, email, password, dob, gender, type, mobile, photoUrl, about, skills } = req.body
+        const existingUser = await UserModel.findOne({ email })
 
         if (existingUser) {
-            throwEmailAlreadyInUseError();
+            throwEmailAlreadyInUseError()
         }
 
-        const passwordHash = await hash(password, USER.PASSWORD_SALT_ROUNDS);
+        const passwordHash = await hash(password, USER.PASSWORD_SALT_ROUNDS)
         const newUser = UserModel({
             firstName,
             lastName,
@@ -69,16 +70,16 @@ const signUpNewUser = async (req, res) => {
             photoUrl,
             about,
             skills,
-        });
-        const newSavedUser = await newUser.save();
-        sendStandardResponse(res, { message: 'User created successfully', data: { user: newSavedUser } });
+        })
+        const newSavedUser = await newUser.save()
+        sendStandardResponse(res, { message: 'User created successfully', data: { user: newSavedUser } })
     } catch (error) {
-        sendStandardResponse(res, { message: error.message, data: { user: null }, error });
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
-};
+}
 
 module.exports = {
     signInUser,
     signOutUser,
     signUpNewUser,
-};
+}

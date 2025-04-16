@@ -1,28 +1,28 @@
-const { REQUEST_STATUS } = require('../config/keys');
+const { REQUEST_STATUS } = require('#Config/keys')
 
 const sendStandardResponse = (res, { status, message, data, error }) => {
     if (error) {
-        status = error?.cause ? error?.cause : REQUEST_STATUS.SERVER_ERROR;
+        status = error.cause ? error.cause : REQUEST_STATUS.SERVER_ERROR
     } else {
-        error = null;
+        error = null
     }
     if (!status) {
-        status = REQUEST_STATUS.SUCCESS;
+        status = REQUEST_STATUS.SUCCESS
     }
     if (!message) {
-        message = null;
+        message = null
     }
     if (!data) {
-        data = null;
+        data = null
     }
     res.status(status.statusCode).json({
         status,
         message,
         data,
         error,
-    });
-};
+    })
+}
 
 module.exports = {
     sendStandardResponse,
-};
+}

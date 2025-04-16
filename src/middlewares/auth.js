@@ -1,63 +1,63 @@
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
 
-const { UserModel } = require('../models/userModel');
+const { UserModel } = require('#Models/userModel')
 
 const {
     throwUserNotFoundError,
     throwTokenNotFoundError,
     throwInvalidTokenError,
     throwUserForbiddenError,
-} = require('../utils/errorUtils');
-const { sendStandardResponse } = require('../utils/responseUtils');
+} = require('#Utils/errorUtils')
+const { sendStandardResponse } = require('#Utils/responseUtils')
 
 const adminAuth = async (req, res, next) => {
     try {
-        const { token } = req.cookies;
+        const { token } = req.cookies
         if (!token) {
-            throwTokenNotFoundError();
+            throwTokenNotFoundError()
         }
-        const { _id: userId } = await jwt.verify(token, process.env.JWT_TOKEN_SECRET_KEY);
+        const { _id: userId } = await jwt.verify(token, process.env.JWT_TOKEN_SECRET_KEY)
         if (!userId) {
-            throwInvalidTokenError();
+            throwInvalidTokenError()
         }
 
-        const user = await UserModel.findById(userId);
+        const user = await UserModel.findById(userId)
         if (!user) {
-            throwUserNotFoundError('userId', userId);
+            throwUserNotFoundError('userId', userId)
         }
         if (user.type !== 'admin') {
-            throwUserForbiddenError();
+            throwUserForbiddenError()
         }
-        req.user = user;
-        next();
+        req.user = user
+        next()
     } catch (error) {
-        sendStandardResponse(res, { message: error.message, error });
+        sendStandardResponse(res, { message: error.message, error })
     }
-};
+}
 
 const userAuth = async (req, res, next) => {
     try {
-        const { token } = req.cookies;
+        const { token } = req.cookies
         if (!token) {
-            throwTokenNotFoundError();
+            throwTokenNotFoundError()
         }
-        const { _id: userId } = await jwt.verify(token, process.env.JWT_TOKEN_SECRET_KEY);
+        const { _id: userId } = await jwt.verify(token, process.env.JWT_TOKEN_SECRET_KEY)
         if (!userId) {
-            throwInvalidTokenError();
+            throwInvalidTokenError()
         }
 
-        const user = await UserModel.findById(userId);
+        const user = await UserModel.findById(userId)
         if (!user) {
-            throwUserNotFoundError('userId', userId);
+            throwUserNotFoundError('userId', userId)
         }
-        req.user = user;
-        next();
+        req.user = user
+        next()
     } catch (error) {
-        sendStandardResponse(res, { message: error.message, error });
+        sendStandardResponse(res, { message: error.message, error })
     }
-};
+}
 
 module.exports = {
     adminAuth,
     userAuth,
-};
+}

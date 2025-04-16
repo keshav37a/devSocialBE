@@ -3,9 +3,23 @@
     "version": "1.0.0",
     "description": "tinder for devs",
     "main": "index.js",
+    "type": "module",
+    "imports": {
+        "#/*": "./*.js",
+        "#Config/*": "./src/config/*.js",
+        "#Controllers/*": "./src/controllers/*.js",
+        "#Middlewares/*": "./src/middlewares/*.js",
+        "#Models/*": "./src/models/*.js",
+        "#Routes/*": "./src/routes/*.js",
+        "#Utils/*": "./src/utils/*.js",
+        "#Validations/*": "./src/validations/*.js"
+    },
     "scripts": {
         "start": "node src/app.js",
-        "dev": "nodemon src/app.js"
+        "dev": "nodemon src/app.js",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "format": "prettier --write ."
     },
     "keywords": [
         "backend",
@@ -23,5 +37,19 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.11.0",
         "validator": "^13.12.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.24.0",
+        "eslint": "^9.24.0",
+        "eslint-config-prettier": "^10.1.2",
+        "eslint-import-resolver-alias": "^1.1.2",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-prettier": "^5.2.6",
+        "eslint-plugin-promise": "^7.2.1",
+        "eslint-plugin-security": "^3.0.1",
+        "globals": "^16.0.0",
+        "nodemon": "^3.1.9",
+        "prettier": "^3.5.3"
     }
 }

@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express')
 
 const {
     deleteConnectionRequestByConnectionRequestId,
@@ -9,28 +9,27 @@ const {
     getPendingConnectionRequestsForReviewByUser,
     reviewConnectionRequest,
     sendConnectionRequest,
-} = require('../controllers/connectionController');
+} = require('#Controllers/connectionController')
+const { userAuth, adminAuth } = require('#Middlewares/auth')
 
-const { userAuth, adminAuth } = require('../middlewares/auth');
-
-const router = express.Router();
+const router = express.Router()
 
 /* Admin routes */
-router.get('/all', adminAuth, getAllConnectionRequests);
-router.delete('/delete/email', adminAuth, deleteConnectionRequestByEmail);
-router.delete('/delete/user-id', userAuth, deleteConnectionRequestByUserId);
+router.get('/all', adminAuth, getAllConnectionRequests)
+router.delete('/delete/email', adminAuth, deleteConnectionRequestByEmail)
+router.delete('/delete/user-id', userAuth, deleteConnectionRequestByUserId)
 router.delete(
     '/delete/connection-request-id/:connectionRequestId',
     adminAuth,
     deleteConnectionRequestByConnectionRequestId
-);
+)
 
 /* Customer routes */
-router.post('/send/:status/:toUser', userAuth, sendConnectionRequest);
-router.get('/review-requests', userAuth, getPendingConnectionRequestsForReviewByUser);
-router.get('/connections', userAuth, getConnectionsByUser);
-router.post('/review/:status/:connectionRequestId', userAuth, reviewConnectionRequest);
+router.post('/send/:status/:toUser', userAuth, sendConnectionRequest)
+router.get('/review-requests', userAuth, getPendingConnectionRequestsForReviewByUser)
+router.get('/connections', userAuth, getConnectionsByUser)
+router.post('/review/:status/:connectionRequestId', userAuth, reviewConnectionRequest)
 
 module.exports = {
     connectionRequestRoutes: router,
-};
+}

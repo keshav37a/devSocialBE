@@ -1,5 +1,10 @@
-const mongoose = require('mongoose');
-const { ConnectionRequestModel } = require('../models/connectionRequestModel');
+const mongoose = require('mongoose')
+
+const { validateIsUserSignedIn } = require('./userValidation')
+
+const { ConnectionRequestModel } = require('#Models/connectionRequestModel')
+const { UserModel } = require('#Models/userModel')
+
 const {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestAlreadyReviewedError,
@@ -12,92 +17,90 @@ const {
     throwSameToUserAndFromUserInConnectionRequestError,
     throwUserNotFoundError,
     throwUserIdNotMatchingWithToUser,
-} = require('../utils/errorUtils');
-const { UserModel } = require('../models/userModel');
-const { validateIsUserSignedIn } = require('./userValidation');
+} = require('#Utils/errorUtils')
 
 const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
-    validateIsUserSignedIn();
-    const { connectionRequestId } = req.params;
+    validateIsUserSignedIn()
+    const { connectionRequestId } = req.params
     if (!connectionRequestId) {
-        throwMissingConnectionRequestError();
+        throwMissingConnectionRequestError()
     }
     if (!mongoose.Types.ObjectId.isValid(connectionRequestId)) {
-        throwInvalidDataError('connectionRequestId', connectionRequestId);
+        throwInvalidDataError('connectionRequestId', connectionRequestId)
     }
-};
+}
 
 const validateDeleteConnectionRequestByEmail = (req) => {
-    const { fromUserEmail, toUserEmail } = req.body;
+    const { fromUserEmail, toUserEmail } = req.body
     if (!fromUserEmail) {
-        throwMissingDataError('fromUserEmail');
+        throwMissingDataError('fromUserEmail')
     }
     if (!toUserEmail) {
-        throwMissingDataError('toUserEmail');
+        throwMissingDataError('toUserEmail')
     }
-};
+}
 
 const validateDeleteConnectionRequestByUserId = (req) => {
-    const { fromUserId, toUserId } = req.body;
+    const { fromUserId, toUserId } = req.body
     if (!fromUserId) {
-        throwMissingFromUserInConnectionRequestError();
+        throwMissingFromUserInConnectionRequestError()
     }
     if (!toUserId) {
-        throwMissingToUserInConnectionRequestError();
+        throwMissingToUserInConnectionRequestError()
     }
     if (!mongoose.Types.ObjectId.isValid(fromUserId)) {
-        throwInvalidDataError('userId', fromUserId);
+        throwInvalidDataError('userId', fromUserId)
     }
     if (!mongoose.Types.ObjectId.isValid(toUserId)) {
-        throwInvalidDataError('userId', toUserId);
+        throwInvalidDataError('userId', toUserId)
     }
-};
+}
 
 const validateReviewConnectionRequest = async (req) => {
-    const user = req.user;
-    validateIsUserSignedIn(req);
-    const loggedInUserId = user._id;
-    const { status, connectionRequestId } = req.params;
-    const allowedStatuses = ['accepted', 'rejected'];
+    const user = req.user
+    validateIsUserSignedIn(req)
+    const loggedInUserId = user._id
+    const { status, connectionRequestId } = req.params
+    const allowedStatuses = ['accepted', 'rejected']
     if (!allowedStatuses.includes(status)) {
-        throwInvalidDataError('status', status);
+        throwInvalidDataError('status', status)
     }
-    const connectionRequest = await ConnectionRequestModel.findById(connectionRequestId);
+    const connectionRequest = await ConnectionRequestModel.findById(connectionRequestId)
     if (!connectionRequest) {
-        throwConnectionRequestNotFoundForThisConnectionRequestId();
+        throwConnectionRequestNotFoundForThisConnectionRequestId()
     }
     if (!connectionRequest.toUser.equals(loggedInUserId)) {
-        throwUserIdNotMatchingWithToUser();
+        throwUserIdNotMatchingWithToUser()
     }
     if (allowedStatuses.includes(connectionRequest.status)) {
-        throwConnectionRequestAlreadyReviewedError();
+        throwConnectionRequestAlreadyReviewedError()
     }
-    return connectionRequest;
-};
+    return connectionRequest
+}
 
 const validateSendConnectionRequest = async (req) => {
-    validateIsUserSignedIn(req);
+    validateIsUserSignedIn(req)
 
-    const { toUser } = req.params;
-    const fromUser = req.user._id;
+    const { toUser } = req.params
+    const fromUser = req.user._id
 
     if (!toUser) {
-        throwMissingToUserInConnectionRequestError();
+        throwMissingToUserInConnectionRequestError()
     }
     if (!mongoose.Types.ObjectId.isValid(toUser)) {
-        throwInvalidDataError('userId', toUser);
+        throwInvalidDataError('userId', toUser)
     }
-    const isToUserExists = await UserModel.findById(toUser);
+    const isToUserExists = await UserModel.findById(toUser)
     if (!isToUserExists) {
-        throwUserNotFoundError('userId');
+        throwUserNotFoundError('userId')
     }
     if (fromUser.equals(toUser)) {
-        throwSameToUserAndFromUserInConnectionRequestError();
+        throwSameToUserAndFromUserInConnectionRequestError()
     }
-    const { status } = req.params;
-    const allowedStatuses = ['interested', 'ignored'];
+    const { status } = req.params
+    const allowedStatuses = ['interested', 'ignored']
     if (!allowedStatuses.includes(status)) {
-        throwInvalidDataError('status', status);
+        throwInvalidDataError('status', status)
     }
 
     const existingConnectionRequest = await ConnectionRequestModel.findOne({
@@ -105,11 +108,11 @@ const validateSendConnectionRequest = async (req) => {
             { fromUser, toUser },
             { fromUser: toUser, toUser: fromUser },
         ],
-    });
+    })
     if (existingConnectionRequest) {
-        throwConnectionRequestAlreadyExistsForTheseUsers();
+        throwConnectionRequestAlreadyExistsForTheseUsers()
     }
-};
+}
 
 module.exports = {
     validateDeleteConnectionRequestByConnectionRequestId,
@@ -117,4 +120,4 @@ module.exports = {
     validateDeleteConnectionRequestByUserId,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
-};
+}

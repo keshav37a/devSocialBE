@@ -32,4 +32,4 @@ module.exports = {
         CUSTOMER_FIELDS: ['firstName', 'lastName', 'photoUrl', 'age', 'gender', 'about', 'skills'],
         ADMIN_FIELDS: ['firstName', 'lastName', 'photoUrl', 'age', 'gender', 'about', 'skills', 'email'],
     },
-};
+}

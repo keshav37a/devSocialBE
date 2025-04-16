@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "target": "es6",
+        "paths": {
+            "#": ["./*"],
+            "#Controllers/*": ["src/controllers/*"],
+            "#Middlewares/*": ["src/middlewares/*"],
+            "#Models/*": ["src/models/*"],
+            "#Routes/*": ["src/routes/*"],
+            "#Utils/*": ["src/utils/*"],
+            "#Validations/*": ["src/validations/*"],
+            "#Config/*": ["src/config/*"]
+        }
+    },
+    "exclude": ["node_modules", "dist"]
+}

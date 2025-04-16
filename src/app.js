@@ -1,36 +1,35 @@
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-require('dotenv').config();
-const express = require('express');
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+require('dotenv').config()
+const express = require('express')
 
-const { handleDBConnect } = require('./config/database');
+const { handleDBConnect } = require('#Config/database')
+const { EXPRESS_PORT, FRONTEND_DEV_URL } = require('#Config/keys')
 
-const { authRoutes } = require('./routes/authRoutes');
-const { profileRoutes } = require('./routes/profileRoutes');
-const { connectionRequestRoutes } = require('./routes/connectionRequestRoutes');
-const { userRoutes } = require('./routes/userRoutes');
+const { authRoutes } = require('#Routes/authRoutes')
+const { connectionRequestRoutes } = require('#Routes/connectionRequestRoutes')
+const { profileRoutes } = require('#Routes/profileRoutes')
+const { userRoutes } = require('#Routes/userRoutes')
 
-const { EXPRESS_PORT, FRONTEND_DEV_URL } = require('./config/keys');
-
-const app = express();
+const app = express()
 
 handleDBConnect()
-    .then(() => {
+    .then(() =>
         app.listen(EXPRESS_PORT, () => {
-            console.log(`listening on port ${EXPRESS_PORT}`);
-        });
-    })
+            console.log(`listening on port ${EXPRESS_PORT}`)
+        })
+    )
     .catch((err) => {
-        console.log(`error in connecting to db ${err}`);
-    });
+        console.log(`error in connecting to db ${err}`)
+    })
 
-app.use(express.json());
+app.use(express.json())
 app.use(
     express.urlencoded({
         extended: true,
     })
-);
-app.use(cookieParser());
+)
+app.use(cookieParser())
 
 app.use(
     cors({
@@ -38,9 +37,9 @@ app.use(
         optionsSuccessStatus: 200,
         credentials: true,
     })
-);
+)
 
-app.use('/auth', authRoutes);
-app.use('/profile', profileRoutes);
-app.use('/connection-request', connectionRequestRoutes);
-app.use('/user', userRoutes);
+app.use('/auth', authRoutes)
+app.use('/profile', profileRoutes)
+app.use('/connection-request', connectionRequestRoutes)
+app.use('/user', userRoutes)
