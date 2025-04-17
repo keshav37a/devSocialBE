@@ -1,6 +1,6 @@
-const express = require('express')
+import express from 'express'
 
-const { signInUser, signOutUser, signUpNewUser } = require('#Controllers/authController')
+import { signInUser, signOutUser, signUpNewUser } from '#Controllers/authController'
 
 const router = express.Router()
 
@@ -9,6 +9,4 @@ router.post('/signin', signInUser)
 router.post('/signout', signOutUser)
 router.post('/signup', signUpNewUser)
 
-module.exports = {
-    authRoutes: router,
-}
+export const authRoutes = router

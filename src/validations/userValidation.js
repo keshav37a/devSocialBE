@@ -1,52 +1,43 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
-const { throwInvalidDataError, throwMissingDataError, throwUserForbiddenError } = require('#Utils/errorUtils')
+import { throwInvalidDataError, throwMissingDataError, throwUserForbiddenError } from '#Utils/errorUtils'
 
-const validateDeleteUserByEmail = (req) => {
+export const validateDeleteUserByEmail = (req) => {
     const { email } = req.body
     if (!email) {
         throwMissingDataError('email')
     }
 }
 
-const validateDeleteUserById = (req) => {
+export const validateDeleteUserById = (req) => {
     const { userId } = req.params
     validateIsUserSignedIn(req)
     validateUserIdHelper(userId)
 }
 
-const validateGetUserById = (req) => {
+export const validateGetUserById = (req) => {
     const { userId } = req.params
     validateIsUserSignedIn(req)
     validateUserIdHelper(userId)
 }
 
-const validateIsUserSignedIn = (req) => {
+export const validateIsUserSignedIn = (req) => {
     const user = req.user
     if (!user) {
         throwUserForbiddenError()
     }
 }
 
-const validateUpdateUser = (req) => {
+export const validateUpdateUser = (req) => {
     const { userId } = req.params
     validateUserIdHelper(userId)
 }
 
-const validateUserIdHelper = (userId) => {
+export const validateUserIdHelper = (userId) => {
     if (!userId) {
         throwMissingDataError('userId')
     }
     if (!mongoose.Types.ObjectId.isValid(userId)) {
         throwInvalidDataError('userId', userId)
     }
-}
-
-module.exports = {
-    validateIsUserSignedIn,
-    validateDeleteUserByEmail,
-    validateDeleteUserById,
-    validateGetUserById,
-    validateUpdateUser,
-    validateUserIdHelper,
 }

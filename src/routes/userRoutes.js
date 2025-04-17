@@ -1,14 +1,14 @@
-const express = require('express')
+import express from 'express'
 
-const {
+import {
     deleteUserByEmail,
     deleteUserById,
     getAllUsers,
     getUserById,
     getUserFeed,
     updateUser,
-} = require('#Controllers/userController')
-const { adminAuth, userAuth } = require('#Middlewares/auth')
+} from '#Controllers/userController'
+import { adminAuth, userAuth } from '#Middlewares/auth'
 
 const router = express.Router()
 
@@ -22,6 +22,4 @@ router.patch('/update/:userId', adminAuth, updateUser)
 /* Customer routes */
 router.get('/feed', userAuth, getUserFeed)
 
-module.exports = {
-    userRoutes: router,
-}
+export const userRoutes = router

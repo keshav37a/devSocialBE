@@ -1,15 +1,15 @@
-const cookieParser = require('cookie-parser')
-const cors = require('cors')
-require('dotenv').config()
-const express = require('express')
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import {} from 'dotenv/config'
+import express from 'express'
 
-const { handleDBConnect } = require('#Config/database')
-const { EXPRESS_PORT, FRONTEND_DEV_URL } = require('#Config/keys')
+import { handleDBConnect } from '#Config/database'
+import { EXPRESS_PORT, FRONTEND_DEV_URL } from '#Config/keys'
 
-const { authRoutes } = require('#Routes/authRoutes')
-const { connectionRequestRoutes } = require('#Routes/connectionRequestRoutes')
-const { profileRoutes } = require('#Routes/profileRoutes')
-const { userRoutes } = require('#Routes/userRoutes')
+import { authRoutes } from '#Routes/authRoutes'
+import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
+import { profileRoutes } from '#Routes/profileRoutes'
+import { userRoutes } from '#Routes/userRoutes'
 
 const app = express()
 

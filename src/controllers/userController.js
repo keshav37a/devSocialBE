@@ -1,20 +1,20 @@
-const { ConnectionRequestModel } = require('#Models/connectionRequestModel')
-const { UserModel } = require('#Models/userModel')
+import { ConnectionRequestModel } from '#Models/connectionRequestModel'
+import { UserModel } from '#Models/userModel'
 
-const { USER } = require('#Config/keys')
+import { USER } from '#Config/keys'
 
-const { throwUserNotFoundError } = require('#Utils/errorUtils')
-const { sendStandardResponse } = require('#Utils/responseUtils')
+import { throwUserNotFoundError } from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
 
-const {
+import {
     validateDeleteUserByEmail,
     validateDeleteUserById,
     validateGetUserById,
     validateIsUserSignedIn,
     validateUpdateUser,
-} = require('#Validations/userValidation')
+} from '#Validations/userValidation'
 
-const deleteUserByEmail = async (req, res) => {
+export const deleteUserByEmail = async (req, res) => {
     try {
         validateDeleteUserByEmail(req)
         const { email } = req.body
@@ -28,7 +28,7 @@ const deleteUserByEmail = async (req, res) => {
     }
 }
 
-const deleteUserById = async (req, res) => {
+export const deleteUserById = async (req, res) => {
     try {
         validateDeleteUserById(req)
         const { userId } = req.params
@@ -42,7 +42,7 @@ const deleteUserById = async (req, res) => {
     }
 }
 
-const getAllUsers = async (_, res) => {
+export const getAllUsers = async (_, res) => {
     try {
         const users = await UserModel.find().select(USER.ADMIN_FIELDS)
         sendStandardResponse(res, { message: 'All users fetched successfuly', data: { users } })
@@ -51,7 +51,7 @@ const getAllUsers = async (_, res) => {
     }
 }
 
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
     try {
         validateGetUserById(req)
         const { userId } = req.params
@@ -65,7 +65,7 @@ const getUserById = async (req, res) => {
     }
 }
 
-const getUserFeed = async (req, res) => {
+export const getUserFeed = async (req, res) => {
     try {
         validateIsUserSignedIn(req)
         const { _id: loggedInUserId } = req.user
@@ -92,7 +92,7 @@ const getUserFeed = async (req, res) => {
     }
 }
 
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
     try {
         validateUpdateUser(req)
         const { userId } = req.params
@@ -109,13 +109,4 @@ const updateUser = async (req, res) => {
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
-}
-
-module.exports = {
-    deleteUserByEmail,
-    deleteUserById,
-    getAllUsers,
-    getUserById,
-    getUserFeed,
-    updateUser,
 }

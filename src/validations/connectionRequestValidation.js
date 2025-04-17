@@ -1,11 +1,9 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
-const { validateIsUserSignedIn } = require('./userValidation')
+import { ConnectionRequestModel } from '#Models/connectionRequestModel'
+import { UserModel } from '#Models/userModel'
 
-const { ConnectionRequestModel } = require('#Models/connectionRequestModel')
-const { UserModel } = require('#Models/userModel')
-
-const {
+import {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestAlreadyReviewedError,
     throwConnectionRequestNotFoundForThisConnectionRequestId,
@@ -15,11 +13,13 @@ const {
     throwMissingFromUserInConnectionRequestError,
     throwMissingToUserInConnectionRequestError,
     throwSameToUserAndFromUserInConnectionRequestError,
-    throwUserNotFoundError,
     throwUserIdNotMatchingWithToUser,
-} = require('#Utils/errorUtils')
+    throwUserNotFoundError,
+} from '#Utils/errorUtils'
 
-const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
+import { validateIsUserSignedIn } from '#Validations/userValidation'
+
+export const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
     validateIsUserSignedIn()
     const { connectionRequestId } = req.params
     if (!connectionRequestId) {
@@ -30,7 +30,7 @@ const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
     }
 }
 
-const validateDeleteConnectionRequestByEmail = (req) => {
+export const validateDeleteConnectionRequestByEmail = (req) => {
     const { fromUserEmail, toUserEmail } = req.body
     if (!fromUserEmail) {
         throwMissingDataError('fromUserEmail')
@@ -40,7 +40,7 @@ const validateDeleteConnectionRequestByEmail = (req) => {
     }
 }
 
-const validateDeleteConnectionRequestByUserId = (req) => {
+export const validateDeleteConnectionRequestByUserId = (req) => {
     const { fromUserId, toUserId } = req.body
     if (!fromUserId) {
         throwMissingFromUserInConnectionRequestError()
@@ -56,7 +56,7 @@ const validateDeleteConnectionRequestByUserId = (req) => {
     }
 }
 
-const validateReviewConnectionRequest = async (req) => {
+export const validateReviewConnectionRequest = async (req) => {
     const user = req.user
     validateIsUserSignedIn(req)
     const loggedInUserId = user._id
@@ -78,7 +78,7 @@ const validateReviewConnectionRequest = async (req) => {
     return connectionRequest
 }
 
-const validateSendConnectionRequest = async (req) => {
+export const validateSendConnectionRequest = async (req) => {
     validateIsUserSignedIn(req)
 
     const { toUser } = req.params
@@ -112,12 +112,4 @@ const validateSendConnectionRequest = async (req) => {
     if (existingConnectionRequest) {
         throwConnectionRequestAlreadyExistsForTheseUsers()
     }
-}
-
-module.exports = {
-    validateDeleteConnectionRequestByConnectionRequestId,
-    validateDeleteConnectionRequestByEmail,
-    validateDeleteConnectionRequestByUserId,
-    validateReviewConnectionRequest,
-    validateSendConnectionRequest,
 }

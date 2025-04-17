@@ -1,8 +1,8 @@
-const validator = require('validator')
+import validator from 'validator'
 
-const { throwInvalidDataError, throwMissingDataError, throwUserSkillCountError } = require('#Utils/errorUtils')
+import { throwInvalidDataError, throwMissingDataError, throwUserSkillCountError } from '#Utils/errorUtils'
 
-const validateUserSignIn = (req) => {
+export const validateUserSignIn = (req) => {
     const { email, password } = req.body
     if (!email) {
         throwMissingDataError('email')
@@ -15,7 +15,7 @@ const validateUserSignIn = (req) => {
     }
 }
 
-const validateUserSignUp = (req) => {
+export const validateUserSignUp = (req) => {
     const { firstName, lastName, email, password, skills, photoUrl, dob, gender, mobile, about } = req.body
     if (!firstName) {
         throwMissingDataError('firstName')
@@ -51,9 +51,4 @@ const validateUserSignUp = (req) => {
     if (about && about.length >= 300) {
         throwInvalidDataError('about', about)
     }
-}
-
-module.exports = {
-    validateUserSignIn,
-    validateUserSignUp,
 }

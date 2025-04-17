@@ -1,19 +1,15 @@
-const { hash } = require('bcrypt')
+import { hash } from 'bcrypt'
 
-const { UserModel } = require('#Models/userModel')
+import { UserModel } from '#Models/userModel'
 
-const { USER } = require('#Config/keys')
+import { USER } from '#Config/keys'
 
-const {
-    throwEmailAlreadyInUseError,
-    throwIncorrectPasswordError,
-    throwUserNotFoundError,
-} = require('#Utils/errorUtils')
-const { sendStandardResponse } = require('#Utils/responseUtils')
+import { throwEmailAlreadyInUseError, throwIncorrectPasswordError, throwUserNotFoundError } from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
 
-const { validateUserSignIn, validateUserSignUp } = require('#Validations/authValidation')
+import { validateUserSignIn, validateUserSignUp } from '#Validations/authValidation'
 
-const signInUser = async (req, res) => {
+export const signInUser = async (req, res) => {
     try {
         validateUserSignIn(req)
         const { email, password } = req.body
@@ -36,7 +32,7 @@ const signInUser = async (req, res) => {
     }
 }
 
-const signOutUser = (_, res) => {
+export const signOutUser = (_, res) => {
     try {
         res.cookie('token', null, {
             expires: new Date(Date.now()),
@@ -47,7 +43,7 @@ const signOutUser = (_, res) => {
     }
 }
 
-const signUpNewUser = async (req, res) => {
+export const signUpNewUser = async (req, res) => {
     try {
         validateUserSignUp(req)
         const { firstName, lastName, email, password, dob, gender, type, mobile, photoUrl, about, skills } = req.body
@@ -76,10 +72,4 @@ const signUpNewUser = async (req, res) => {
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
-}
-
-module.exports = {
-    signInUser,
-    signOutUser,
-    signUpNewUser,
 }

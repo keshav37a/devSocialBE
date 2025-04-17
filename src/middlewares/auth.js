@@ -1,16 +1,16 @@
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken'
 
-const { UserModel } = require('#Models/userModel')
+import { UserModel } from '#Models/userModel'
 
-const {
-    throwUserNotFoundError,
-    throwTokenNotFoundError,
+import {
     throwInvalidTokenError,
+    throwTokenNotFoundError,
     throwUserForbiddenError,
-} = require('#Utils/errorUtils')
-const { sendStandardResponse } = require('#Utils/responseUtils')
+    throwUserNotFoundError,
+} from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
 
-const adminAuth = async (req, res, next) => {
+export const adminAuth = async (req, res, next) => {
     try {
         const { token } = req.cookies
         if (!token) {
@@ -35,7 +35,7 @@ const adminAuth = async (req, res, next) => {
     }
 }
 
-const userAuth = async (req, res, next) => {
+export const userAuth = async (req, res, next) => {
     try {
         const { token } = req.cookies
         if (!token) {
@@ -55,9 +55,4 @@ const userAuth = async (req, res, next) => {
     } catch (error) {
         sendStandardResponse(res, { message: error.message, error })
     }
-}
-
-module.exports = {
-    adminAuth,
-    userAuth,
 }

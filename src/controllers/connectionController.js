@@ -1,25 +1,25 @@
-const { ConnectionRequestModel } = require('#Models/connectionRequestModel')
-const { UserModel } = require('#Models/userModel')
+import { ConnectionRequestModel } from '#Models/connectionRequestModel'
+import { UserModel } from '#Models/userModel'
 
-const { USER } = require('#Config/keys')
+import { USER } from '#Config/keys'
 
-const {
-    throwConnectionRequestNotFoundForThisConnectionRequestId,
+import {
     throwConnectionRequestNotFoundForTheseUsers,
+    throwConnectionRequestNotFoundForThisConnectionRequestId,
     throwUserNotFoundError,
-} = require('#Utils/errorUtils')
-const { sendStandardResponse } = require('#Utils/responseUtils')
+} from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
 
-const {
+import {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
-} = require('#Validations/connectionRequestValidation')
-const { validateIsUserSignedIn } = require('#Validations/userValidation')
+} from '#Validations/connectionRequestValidation'
+import { validateIsUserSignedIn } from '#Validations/userValidation'
 
-const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
+export const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     try {
         validateDeleteConnectionRequestByConnectionRequestId(req)
         const { connectionRequestId } = req.params
@@ -40,7 +40,7 @@ const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     }
 }
 
-const deleteConnectionRequestByEmail = async (req, res) => {
+export const deleteConnectionRequestByEmail = async (req, res) => {
     try {
         validateDeleteConnectionRequestByEmail(req)
         const { fromUserEmail, toUserEmail } = req.body
@@ -72,7 +72,7 @@ const deleteConnectionRequestByEmail = async (req, res) => {
     }
 }
 
-const deleteConnectionRequestByUserId = async (req, res) => {
+export const deleteConnectionRequestByUserId = async (req, res) => {
     try {
         validateDeleteConnectionRequestByUserId(req)
         const { fromUserId, toUserId } = req.body
@@ -96,7 +96,7 @@ const deleteConnectionRequestByUserId = async (req, res) => {
     }
 }
 
-const getAllConnectionRequests = async (_, res) => {
+export const getAllConnectionRequests = async (_, res) => {
     try {
         const allConnectionRequests = await ConnectionRequestModel.find({})
             .populate('fromUser', USER.ADMIN_FIELDS)
@@ -110,7 +110,7 @@ const getAllConnectionRequests = async (_, res) => {
     }
 }
 
-const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
+export const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
     /* get pending connection requests for review  */
     try {
         validateIsUserSignedIn(req)
@@ -128,7 +128,7 @@ const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
     }
 }
 
-const getConnectionsByUser = async (req, res) => {
+export const getConnectionsByUser = async (req, res) => {
     try {
         validateIsUserSignedIn(req)
         const { _id: userId } = req.user
@@ -151,7 +151,7 @@ const getConnectionsByUser = async (req, res) => {
     }
 }
 
-const sendConnectionRequest = async (req, res) => {
+export const sendConnectionRequest = async (req, res) => {
     try {
         await validateSendConnectionRequest(req)
         const { status, toUser } = req.params
@@ -167,7 +167,7 @@ const sendConnectionRequest = async (req, res) => {
     }
 }
 
-const reviewConnectionRequest = async (req, res) => {
+export const reviewConnectionRequest = async (req, res) => {
     try {
         const connectionRequest = await validateReviewConnectionRequest(req)
         const { status } = req.params
@@ -181,15 +181,4 @@ const reviewConnectionRequest = async (req, res) => {
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
     }
-}
-
-module.exports = {
-    deleteConnectionRequestByConnectionRequestId,
-    deleteConnectionRequestByEmail,
-    deleteConnectionRequestByUserId,
-    getAllConnectionRequests,
-    getConnectionsByUser,
-    getPendingConnectionRequestsForReviewByUser,
-    reviewConnectionRequest,
-    sendConnectionRequest,
 }

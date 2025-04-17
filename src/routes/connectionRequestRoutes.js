@@ -1,6 +1,6 @@
-const express = require('express')
+import express from 'express'
 
-const {
+import {
     deleteConnectionRequestByConnectionRequestId,
     deleteConnectionRequestByEmail,
     deleteConnectionRequestByUserId,
@@ -9,8 +9,8 @@ const {
     getPendingConnectionRequestsForReviewByUser,
     reviewConnectionRequest,
     sendConnectionRequest,
-} = require('#Controllers/connectionController')
-const { userAuth, adminAuth } = require('#Middlewares/auth')
+} from '#Controllers/connectionController'
+import { adminAuth, userAuth } from '#Middlewares/auth'
 
 const router = express.Router()
 
@@ -30,6 +30,4 @@ router.get('/review-requests', userAuth, getPendingConnectionRequestsForReviewBy
 router.get('/connections', userAuth, getConnectionsByUser)
 router.post('/review/:status/:connectionRequestId', userAuth, reviewConnectionRequest)
 
-module.exports = {
-    connectionRequestRoutes: router,
-}
+export const connectionRequestRoutes = router

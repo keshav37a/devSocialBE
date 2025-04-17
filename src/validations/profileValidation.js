@@ -1,13 +1,13 @@
-const { validateUserIdHelper } = require('./userValidation')
-
-const {
+import {
     throwInvalidUserProfileUpdateError,
     throwMissingDataError,
     throwSameCurrentPasswordNewPasswordError,
     throwUserForbiddenError,
-} = require('#Utils/errorUtils')
+} from '#Utils/errorUtils'
 
-const validateChangePasswordAsSignedInUser = (req) => {
+import { validateUserIdHelper } from '#Validations/userValidation'
+
+export const validateChangePasswordAsSignedInUser = (req) => {
     const { currentPassword, newPassword } = req.body
     const user = req.user
 
@@ -25,7 +25,7 @@ const validateChangePasswordAsSignedInUser = (req) => {
     }
 }
 
-const validateUpdateUserProfile = (req) => {
+export const validateUpdateUserProfile = (req) => {
     const { userId } = req.params
     validateUserIdHelper(userId)
     const allowedFields = ['firstName', 'lastName', 'dob', 'gender', 'mobile', 'photoUrl', 'about', 'skills']
@@ -34,9 +34,4 @@ const validateUpdateUserProfile = (req) => {
         throwInvalidUserProfileUpdateError()
     }
     return isRequestValid
-}
-
-module.exports = {
-    validateChangePasswordAsSignedInUser,
-    validateUpdateUserProfile,
 }

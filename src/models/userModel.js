@@ -1,7 +1,7 @@
-const { compare } = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const { Schema, model } = require('mongoose')
-const validator = require('validator')
+import { compare } from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { Schema, model } from 'mongoose'
+import validator from 'validator'
 
 const userSchema = new Schema(
     {
@@ -106,8 +106,4 @@ userSchema.methods.validatePassword = async function (passwordInput) {
     return isPasswordMatch
 }
 
-const UserModel = model('User', userSchema)
-
-module.exports = {
-    UserModel,
-}
+export const UserModel = model('User', userSchema)

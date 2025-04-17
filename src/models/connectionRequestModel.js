@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose')
+import { Schema, model } from 'mongoose'
 
 const connectionRequestSchema = new Schema(
     {
@@ -35,8 +35,4 @@ connectionRequestSchema.pre('save', function (next) {
     next()
 })
 
-const ConnectionRequestModel = model('ConnectionRequest', connectionRequestSchema)
-
-module.exports = {
-    ConnectionRequestModel,
-}
+export const ConnectionRequestModel = model('ConnectionRequest', connectionRequestSchema)

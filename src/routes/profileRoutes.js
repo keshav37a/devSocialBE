@@ -1,7 +1,7 @@
-const express = require('express')
+import express from 'express'
 
-const { getUserProfile, updateUserProfile, changePasswordAsSignedInUser } = require('#Controllers/profileController')
-const { userAuth } = require('#Middlewares/auth')
+import { changePasswordAsSignedInUser, getUserProfile, updateUserProfile } from '#Controllers/profileController'
+import { userAuth } from '#Middlewares/auth'
 
 const router = express.Router()
 
@@ -10,6 +10,4 @@ router.post('/change-password', userAuth, changePasswordAsSignedInUser)
 router.patch('/edit', userAuth, updateUserProfile)
 router.get('/view', userAuth, getUserProfile)
 
-module.exports = {
-    profileRoutes: router,
-}
+export const profileRoutes = router

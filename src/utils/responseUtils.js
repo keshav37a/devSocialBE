@@ -1,6 +1,6 @@
-const { REQUEST_STATUS } = require('#Config/keys')
+import { REQUEST_STATUS } from '#Config/keys'
 
-const sendStandardResponse = (res, { status, message, data, error }) => {
+export const sendStandardResponse = (res, { status, message, data, error }) => {
     if (error) {
         status = error.cause ? error.cause : REQUEST_STATUS.SERVER_ERROR
     } else {
@@ -21,8 +21,4 @@ const sendStandardResponse = (res, { status, message, data, error }) => {
         data,
         error,
     })
-}
-
-module.exports = {
-    sendStandardResponse,
 }

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
-const handleDBConnect = async () => {
+export const handleDBConnect = async () => {
     try {
         console.log('handleMongoConnect called ')
         await mongoose.connect(`${process.env.CONNECTION_URI}/${process.env.DATABASE_NAME}`)
@@ -16,7 +16,3 @@ mongoose.connection.on('error', (err) => {
 mongoose.connection.once('open', () => {
     console.log('database connected')
 })
-
-module.exports = {
-    handleDBConnect,
-}

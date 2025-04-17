@@ -1,13 +1,13 @@
-const { hash } = require('bcrypt')
+import { hash } from 'bcrypt'
 
-const { USER } = require('#Config/keys')
+import { USER } from '#Config/keys'
 
-const { throwIncorrectPasswordError, throwUserForbiddenError } = require('#Utils/errorUtils')
-const { sendStandardResponse } = require('#Utils/responseUtils')
+import { throwIncorrectPasswordError, throwUserForbiddenError } from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
 
-const { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } = require('#Validations/profileValidation')
+import { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } from '#Validations/profileValidation'
 
-const changePasswordAsSignedInUser = async (req, res) => {
+export const changePasswordAsSignedInUser = async (req, res) => {
     try {
         validateChangePasswordAsSignedInUser(req)
         const user = req.user
@@ -31,7 +31,7 @@ const changePasswordAsSignedInUser = async (req, res) => {
     }
 }
 
-const getUserProfile = (req, res) => {
+export const getUserProfile = (req, res) => {
     try {
         const user = req.user
         if (!user) {
@@ -43,7 +43,7 @@ const getUserProfile = (req, res) => {
     }
 }
 
-const updateUserProfile = async (req, res) => {
+export const updateUserProfile = async (req, res) => {
     try {
         validateUpdateUserProfile(req)
         const user = req.user
@@ -55,10 +55,4 @@ const updateUserProfile = async (req, res) => {
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
-}
-
-module.exports = {
-    changePasswordAsSignedInUser,
-    getUserProfile,
-    updateUserProfile,
 }

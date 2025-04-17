@@ -65,12 +65,16 @@ export default defineConfig([
                 },
             ],
             'import/newline-after-import': ['warn', { count: 1 }],
+            'import/no-unresolved': 'off',
         },
     },
     {
         settings: {
             'import/resolver': {
-                node: true,
+                node: {
+                    extensions: 'js',
+                    moduleDirectory: ['node_modules', 'src/'],
+                },
                 alias: {
                     map: [
                         ['#', 'src'],
