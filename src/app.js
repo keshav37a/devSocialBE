@@ -6,6 +6,7 @@ import express from 'express'
 import { handleDBConnect } from '#Config/database'
 import { EXPRESS_PORT, FRONTEND_DEV_URL } from '#Config/keys'
 
+import { logger } from '#Middlewares/logger'
 import { authRoutes } from '#Routes/authRoutes'
 import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
 import { profileRoutes } from '#Routes/profileRoutes'
@@ -38,6 +39,8 @@ app.use(
         credentials: true,
     })
 )
+
+app.use('*', logger)
 
 app.use('/auth', authRoutes)
 app.use('/profile', profileRoutes)
