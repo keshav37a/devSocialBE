@@ -1,4 +1,4 @@
-import { USER } from '#Config/keys'
+import { validateUserIdHelper } from '#Validations/userValidation'
 
 import {
     throwInvalidUserProfileUpdateError,
@@ -7,7 +7,7 @@ import {
     throwUserForbiddenError,
 } from '#Utils/errorUtils'
 
-import { validateUserIdHelper } from '#Validations/userValidation'
+import { USER } from '#Config/keys'
 
 export const validateChangePasswordAsSignedInUser = (req) => {
     const { currentPassword, newPassword } = req.body

@@ -3,6 +3,8 @@ import mongoose from 'mongoose'
 import { ConnectionRequestModel } from '#Models/connectionRequestModel'
 import { UserModel } from '#Models/userModel'
 
+import { validateIsUserSignedIn } from '#Validations/userValidation'
+
 import {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestAlreadyReviewedError,
@@ -16,8 +18,6 @@ import {
     throwUserIdNotMatchingWithToUser,
     throwUserNotFoundError,
 } from '#Utils/errorUtils'
-
-import { validateIsUserSignedIn } from '#Validations/userValidation'
 
 export const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
     validateIsUserSignedIn()
@@ -92,7 +92,7 @@ export const validateSendConnectionRequest = async (req) => {
     }
     const isToUserExists = await UserModel.findById(toUser)
     if (!isToUserExists) {
-        throwUserNotFoundError('userId')
+        throwUserNotFoundError()
     }
     if (fromUser.equals(toUser)) {
         throwSameToUserAndFromUserInConnectionRequestError()

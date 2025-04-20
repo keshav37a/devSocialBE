@@ -1,15 +1,6 @@
 import { ConnectionRequestModel } from '#Models/connectionRequestModel'
 import { UserModel } from '#Models/userModel'
 
-import { USER } from '#Config/keys'
-
-import {
-    throwConnectionRequestNotFoundForTheseUsers,
-    throwConnectionRequestNotFoundForThisConnectionRequestId,
-    throwUserNotFoundError,
-} from '#Utils/errorUtils'
-import { sendStandardResponse } from '#Utils/responseUtils'
-
 import {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
@@ -18,6 +9,15 @@ import {
     validateSendConnectionRequest,
 } from '#Validations/connectionRequestValidation'
 import { validateIsUserSignedIn } from '#Validations/userValidation'
+
+import {
+    throwConnectionRequestNotFoundForTheseUsers,
+    throwConnectionRequestNotFoundForThisConnectionRequestId,
+    throwUserNotFoundError,
+} from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
+
+import { USER } from '#Config/keys'
 
 export const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
     try {
@@ -46,11 +46,11 @@ export const deleteConnectionRequestByEmail = async (req, res) => {
         const { fromUserEmail, toUserEmail } = req.body
         const fromUser = await UserModel.findOne({ email: fromUserEmail })
         if (!fromUser) {
-            throwUserNotFoundError('email', fromUserEmail)
+            throwUserNotFoundError()
         }
         const toUser = await UserModel.findOne({ email: toUserEmail })
         if (!toUser) {
-            throwUserNotFoundError('email', toUserEmail)
+            throwUserNotFoundError()
         }
         const deletedConnectionRequest = await ConnectionRequestModel.findOneAndDelete({
             fromUser: fromUser._id,

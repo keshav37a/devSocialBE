@@ -117,8 +117,8 @@ export const throwUserForbiddenError = () => {
     })
 }
 
-export const throwUserNotFoundError = (fieldName, fieldNotFoundValue) => {
-    throw new Error(`API validation error. User not found. ${fieldName}: ${fieldNotFoundValue} not present in DB`, {
+export const throwUserNotFoundError = () => {
+    throw new Error(`API validation error. User not found`, {
         cause: REQUEST_STATUS.NOT_FOUND,
     })
 }

@@ -3,14 +3,15 @@ import cors from 'cors'
 import {} from 'dotenv/config'
 import express from 'express'
 
-import { handleDBConnect } from '#Config/database'
-import { EXPRESS_PORT, FRONTEND_DEV_URL } from '#Config/keys'
-
-import { logger } from '#Middlewares/logger'
 import { authRoutes } from '#Routes/authRoutes'
 import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
 import { profileRoutes } from '#Routes/profileRoutes'
 import { userRoutes } from '#Routes/userRoutes'
+
+import { logger } from '#Middlewares/logger'
+
+import { handleDBConnect } from '#Config/database'
+import { EXPRESS_PORT, FRONTEND_DEV_URL } from '#Config/keys'
 
 const app = express()
 

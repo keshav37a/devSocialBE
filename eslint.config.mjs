@@ -42,12 +42,27 @@ export default defineConfig([
                             group: 'internal',
                         },
                         {
-                            pattern: '#Config/*',
+                            pattern: '#Routes/*',
+                            group: 'internal',
+                            position: 'after',
+                        },
+                        {
+                            pattern: '#Middlewares/*',
+                            group: 'internal',
+                            position: 'after',
+                        },
+                        {
+                            pattern: '#Validations/*',
                             group: 'internal',
                             position: 'after',
                         },
                         {
                             pattern: '#Utils/*',
+                            group: 'internal',
+                            position: 'after',
+                        },
+                        {
+                            pattern: '#Config/*',
                             group: 'internal',
                             position: 'after',
                         },

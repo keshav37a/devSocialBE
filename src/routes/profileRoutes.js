@@ -1,7 +1,8 @@
 import express from 'express'
 
-import { changePasswordAsSignedInUser, getUserProfile, updateUserProfile } from '#Controllers/profileController'
 import { userAuth } from '#Middlewares/auth'
+
+import { changePasswordAsSignedInUser, getUserProfile, updateUserProfile } from '#Controllers/profileController'
 
 const router = express.Router()
 

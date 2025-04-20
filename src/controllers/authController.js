@@ -2,12 +2,12 @@ import { hash } from 'bcrypt'
 
 import { UserModel } from '#Models/userModel'
 
-import { USER } from '#Config/keys'
+import { validateUserSignIn, validateUserSignUp } from '#Validations/authValidation'
 
 import { throwEmailAlreadyInUseError, throwIncorrectPasswordError, throwUserNotFoundError } from '#Utils/errorUtils'
 import { sendStandardResponse } from '#Utils/responseUtils'
 
-import { validateUserSignIn, validateUserSignUp } from '#Validations/authValidation'
+import { USER } from '#Config/keys'
 
 export const signInUser = async (req, res) => {
     try {
@@ -15,7 +15,7 @@ export const signInUser = async (req, res) => {
         const { email, password } = req.body
         const user = await UserModel.findOne({ email })
         if (!user) {
-            throwUserNotFoundError('email', email)
+            throwUserNotFoundError()
         }
 
         const isPasswordMatch = await user.validatePassword(password)

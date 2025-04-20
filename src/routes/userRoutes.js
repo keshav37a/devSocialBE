@@ -1,5 +1,7 @@
 import express from 'express'
 
+import { adminAuth, userAuth } from '#Middlewares/auth'
+
 import {
     bulkUpdateUsers,
     deleteUserByEmail,
@@ -9,7 +11,6 @@ import {
     getUserFeed,
     updateUser,
 } from '#Controllers/userController'
-import { adminAuth, userAuth } from '#Middlewares/auth'
 
 const router = express.Router()
 

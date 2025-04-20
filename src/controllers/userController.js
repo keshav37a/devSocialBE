@@ -1,11 +1,6 @@
 import { ConnectionRequestModel } from '#Models/connectionRequestModel'
 import { UserModel } from '#Models/userModel'
 
-import { USER } from '#Config/keys'
-
-import { throwUserNotFoundError } from '#Utils/errorUtils'
-import { sendStandardResponse } from '#Utils/responseUtils'
-
 import {
     validateBulkUpdateUsers,
     validateDeleteUserByEmail,
@@ -14,6 +9,11 @@ import {
     validateIsUserSignedIn,
     validateUpdateUser,
 } from '#Validations/userValidation'
+
+import { throwUserNotFoundError } from '#Utils/errorUtils'
+import { sendStandardResponse } from '#Utils/responseUtils'
+
+import { USER } from '#Config/keys'
 
 export const bulkUpdateUsers = async (req, res) => {
     try {
@@ -36,7 +36,7 @@ export const deleteUserByEmail = async (req, res) => {
         const { email } = req.body
         const deletedUser = await UserModel.findOneAndDelete({ email })
         if (!deletedUser) {
-            throwUserNotFoundError('email', email)
+            throwUserNotFoundError()
         }
         sendStandardResponse(res, { message: 'User deleted successfuly', data: { user: deletedUser } })
     } catch (error) {
@@ -50,7 +50,7 @@ export const deleteUserById = async (req, res) => {
         const { userId } = req.params
         const deletedUser = await UserModel.findByIdAndDelete(userId)
         if (!deletedUser) {
-            throwUserNotFoundError('userId', userId)
+            throwUserNotFoundError()
         }
         sendStandardResponse(res, { message: 'User deleted successfuly', data: { user: deletedUser } })
     } catch (error) {
@@ -73,7 +73,7 @@ export const getUserById = async (req, res) => {
         const { userId } = req.params
         const user = await UserModel.findById(userId).select(USER.ADMIN_FIELDS)
         if (!user) {
-            throwUserNotFoundError('userId', userId)
+            throwUserNotFoundError()
         }
         sendStandardResponse(res, { message: 'User fetched successfully', data: { user } })
     } catch (error) {
@@ -119,7 +119,7 @@ export const updateUser = async (req, res) => {
             { new: true }
         ).select(USER.ADMIN_FIELDS)
         if (!updatedUser) {
-            throwUserNotFoundError('userId', userId)
+            throwUserNotFoundError()
         }
         sendStandardResponse(res, { message: 'User updated successfully', data: { user: updatedUser } })
     } catch (error) {

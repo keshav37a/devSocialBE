@@ -1,11 +1,11 @@
 import { hash } from 'bcrypt'
 
-import { USER } from '#Config/keys'
+import { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } from '#Validations/profileValidation'
 
 import { throwIncorrectPasswordError, throwUserForbiddenError } from '#Utils/errorUtils'
 import { sendStandardResponse } from '#Utils/responseUtils'
 
-import { validateChangePasswordAsSignedInUser, validateUpdateUserProfile } from '#Validations/profileValidation'
+import { USER } from '#Config/keys'
 
 export const changePasswordAsSignedInUser = async (req, res) => {
     try {

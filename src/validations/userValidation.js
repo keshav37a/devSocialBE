@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 
-import { USER } from '#Config/keys'
-
 import {
     throwFieldShouldBeAnArrayError,
     throwInvalidDataError,
@@ -9,6 +7,8 @@ import {
     throwMissingDataError,
     throwUserForbiddenError,
 } from '#Utils/errorUtils'
+
+import { USER } from '#Config/keys'
 
 export const validateBulkUpdateUsers = (req) => {
     const { all, userIds, ...restFields } = req.body

@@ -1,5 +1,7 @@
 import express from 'express'
 
+import { adminAuth, userAuth } from '#Middlewares/auth'
+
 import {
     deleteConnectionRequestByConnectionRequestId,
     deleteConnectionRequestByEmail,
@@ -10,7 +12,6 @@ import {
     reviewConnectionRequest,
     sendConnectionRequest,
 } from '#Controllers/connectionController'
-import { adminAuth, userAuth } from '#Middlewares/auth'
 
 const router = express.Router()
 
