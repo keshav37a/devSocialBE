@@ -7,12 +7,28 @@ import { throwUserNotFoundError } from '#Utils/errorUtils'
 import { sendStandardResponse } from '#Utils/responseUtils'
 
 import {
+    validateBulkUpdateUsers,
     validateDeleteUserByEmail,
     validateDeleteUserById,
     validateGetUserById,
     validateIsUserSignedIn,
     validateUpdateUser,
 } from '#Validations/userValidation'
+
+export const bulkUpdateUsers = async (req, res) => {
+    try {
+        validateBulkUpdateUsers(req)
+        const { all, userIds, ...restFields } = req.body
+        const updated = await UserModel.updateMany(all ? {} : { _id: { $in: userIds } }, {
+            $set: {
+                ...restFields,
+            },
+        })
+        sendStandardResponse(res, { message: 'Users updated successfully', data: updated })
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error })
+    }
+}
 
 export const deleteUserByEmail = async (req, res) => {
     try {

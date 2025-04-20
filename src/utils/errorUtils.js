@@ -122,3 +122,9 @@ export const throwUserNotFoundError = (fieldName, fieldNotFoundValue) => {
         cause: REQUEST_STATUS.NOT_FOUND,
     })
 }
+
+export const throwFieldShouldBeAnArrayError = (fieldName) => {
+    throw new Error(`API validation error. ${fieldName} should be an array`, {
+        cause: REQUEST_STATUS.BAD_REQUEST,
+    })
+}

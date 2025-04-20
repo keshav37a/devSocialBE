@@ -1,3 +1,5 @@
+import { USER } from '#Config/keys'
+
 import {
     throwInvalidUserProfileUpdateError,
     throwMissingDataError,
@@ -26,10 +28,10 @@ export const validateChangePasswordAsSignedInUser = (req) => {
 }
 
 export const validateUpdateUserProfile = (req) => {
-    const { userId } = req.params
-    validateUserIdHelper(userId)
-    const allowedFields = ['firstName', 'lastName', 'dob', 'gender', 'mobile', 'photoUrl', 'about', 'skills']
-    const isRequestValid = Object.keys(req.body).every((key) => allowedFields.includes(key))
+    const { _id } = req.user
+    validateUserIdHelper(_id)
+
+    const isRequestValid = Object.keys(req.body).every((key) => USER.CUSTOMER_FIELDS.includes(key))
     if (!isRequestValid) {
         throwInvalidUserProfileUpdateError()
     }

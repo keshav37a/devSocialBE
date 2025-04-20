@@ -1,6 +1,7 @@
 import express from 'express'
 
 import {
+    bulkUpdateUsers,
     deleteUserByEmail,
     deleteUserById,
     getAllUsers,
@@ -13,6 +14,7 @@ import { adminAuth, userAuth } from '#Middlewares/auth'
 const router = express.Router()
 
 /* Admin only routes */
+router.post('/bulk-update', adminAuth, bulkUpdateUsers)
 router.delete('/delete', adminAuth, deleteUserByEmail)
 router.delete('/delete/user-id/:userId', adminAuth, deleteUserById)
 router.get('/all', adminAuth, getAllUsers)
