@@ -13,7 +13,7 @@ import {
 export const validateBulkUpdateUsers = (req) => {
     const { all, userIds, ...restFields } = req.body
     if (!all && !userIds) {
-        throwMissingDataError('userId')
+        throwMissingDataError('userIds')
     }
     if (userIds && !Array.isArray(userIds)) {
         throwFieldShouldBeAnArrayError('userIds')

@@ -106,4 +106,28 @@ userSchema.methods.validatePassword = async function (passwordInput) {
     return isPasswordMatch
 }
 
+userSchema.virtual('fullName').get(function () {
+    return `${this.firstName} ${this.lastName}`
+})
+
+userSchema.virtual('age').get(function () {
+    if (!this.dob) {
+        return null
+    }
+    const today = new Date()
+    const birthDate = new Date(this.dob)
+
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    const dayDiff = today.getDate() - birthDate.getDate()
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        age--
+    }
+    return age
+})
+
+userSchema.set('toJSON', { virtuals: true })
+userSchema.set('toObject', { virtuals: true })
+
 export const UserModel = model('User', userSchema)
