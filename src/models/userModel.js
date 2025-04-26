@@ -127,6 +127,14 @@ userSchema.virtual('age').get(function () {
     return age
 })
 
+userSchema.virtual('genderOptionsDisplay').get(() => {
+    return [
+        { displayName: 'Male', value: 'male' },
+        { displayName: 'Female', value: 'female' },
+        { displayName: 'Other', value: 'other' },
+    ]
+})
+
 userSchema.set('toJSON', { virtuals: true })
 userSchema.set('toObject', { virtuals: true })
 

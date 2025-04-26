@@ -48,6 +48,7 @@ export const updateUserProfile = async (req, res) => {
         validateUpdateUserProfile(req)
         const user = req.user
         Object.keys(req.body).forEach((key) => {
+            // eslint-disable-next-line security/detect-object-injection
             user[key] = req.body[key]
         })
         await user.save()

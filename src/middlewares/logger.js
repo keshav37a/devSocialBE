@@ -3,10 +3,11 @@ export const logger = (req, _, next) => {
     console.log({
         hostname: req.hostname,
         path: req.path,
+        params: req.params,
         time: req.time,
         method: req.method,
         body: req.body,
-        params: req.params,
+        file: req.file,
     })
     next()
 }

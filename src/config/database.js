@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 export const handleDBConnect = async () => {
     try {
         console.log('handleMongoConnect called ')
-        await mongoose.connect(`${process.env.CONNECTION_URI}/${process.env.DATABASE_NAME}`)
+        await mongoose.connect(`${process.env.MONGODB_CONNECTION_URI}/${process.env.DATABASE_NAME}`)
     } catch (err) {
         console.log(`err in connection to db: ${err}`)
     }
