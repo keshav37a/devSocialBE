@@ -17,7 +17,7 @@ router.post('/change-password', userAuth, changePasswordAsSignedInUser)
 router.patch(
     '/edit',
     userAuth,
-    fileUpload.single('dp'),
+    fileUpload.single('profilePic'),
     (req, res, next) =>
         attachParams([
             {
