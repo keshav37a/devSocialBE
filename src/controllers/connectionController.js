@@ -5,6 +5,7 @@ import {
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
+    validateRemoveConnection,
     validateReviewConnectionRequest,
     validateSendConnectionRequest,
 } from '#Validations/connectionRequestValidation'
@@ -176,6 +177,32 @@ export const reviewConnectionRequest = async (req, res) => {
 
         sendStandardResponse(res, {
             message: 'Connection request reviewed successfully',
+            data: { connectionRequest },
+        })
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
+    }
+}
+
+export const removeConnection = async (req, res) => {
+    try {
+        validateRemoveConnection(req)
+        const { _id: fromUserId } = req.user
+        const { userId: toUserId } = req.params
+
+        const connectionRequest = await ConnectionRequestModel.findOneAndDelete({
+            $or: [
+                { toUser: toUserId, fromUser: fromUserId },
+                { toUser: fromUserId, fromUser: toUserId },
+            ],
+        })
+
+        if (!connectionRequest) {
+            throwConnectionRequestNotFoundForTheseUsers()
+        }
+
+        sendStandardResponse(res, {
+            message: 'Connection deleted successfully',
             data: { connectionRequest },
         })
     } catch (error) {

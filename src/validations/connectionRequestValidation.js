@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 import { ConnectionRequestModel } from '#Models/connectionRequestModel'
 import { UserModel } from '#Models/userModel'
 
-import { validateIsUserSignedIn } from '#Validations/userValidation'
+import { validateIsUserSignedIn, validateUserIdHelper } from '#Validations/userValidation'
 
 import {
     throwConnectionRequestAlreadyExistsForTheseUsers,
@@ -76,6 +76,15 @@ export const validateReviewConnectionRequest = async (req) => {
         throwConnectionRequestAlreadyReviewedError()
     }
     return connectionRequest
+}
+
+export const validateRemoveConnection = (req) => {
+    validateIsUserSignedIn(req)
+    const { userId: toUserId } = req.params
+    validateUserIdHelper(toUserId)
+    if (!toUserId) {
+        throwMissingDataError('userId')
+    }
 }
 
 export const validateSendConnectionRequest = async (req) => {
