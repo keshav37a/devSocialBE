@@ -19,6 +19,13 @@ import {
     throwUserNotFoundError,
 } from '#Utils/errorUtils'
 
+export const validateCreateConnectionByUserIds = (req) => {
+    validateIsUserSignedIn(req)
+    const { fromUserId, toUserId } = req.body
+    validateUserIdHelper(toUserId)
+    validateUserIdHelper(fromUserId)
+}
+
 export const validateDeleteConnectionRequestByConnectionRequestId = (req) => {
     validateIsUserSignedIn()
     const { connectionRequestId } = req.params

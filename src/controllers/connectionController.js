@@ -2,6 +2,7 @@ import { ConnectionRequestModel } from '#Models/connectionRequestModel'
 import { UserModel } from '#Models/userModel'
 
 import {
+    validateCreateConnectionByUserIds,
     validateDeleteConnectionRequestByConnectionRequestId,
     validateDeleteConnectionRequestByEmail,
     validateDeleteConnectionRequestByUserId,
@@ -12,6 +13,7 @@ import {
 import { validateIsUserSignedIn } from '#Validations/userValidation'
 
 import {
+    throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestNotFoundForTheseUsers,
     throwConnectionRequestNotFoundForThisConnectionRequestId,
     throwUserNotFoundError,
@@ -20,7 +22,37 @@ import { sendStandardResponse } from '#Utils/responseUtils'
 
 import { USER } from '#Config/keys'
 
+export const createConnectionByUserIds = async (req, res) => {
+    /* Admin controller only */
+    try {
+        validateCreateConnectionByUserIds(req)
+        const { toUserId, fromUserId } = req.body
+        const connectionRequest = await ConnectionRequestModel.findOne({
+            $or: [
+                { toUser: toUserId, fromUser: fromUserId },
+                { toUser: fromUserId, fromUser: toUserId },
+            ],
+        })
+        if (connectionRequest) {
+            throwConnectionRequestAlreadyExistsForTheseUsers()
+        }
+        const newConnectionRequest = ConnectionRequestModel({
+            fromUser: fromUserId,
+            toUser: toUserId,
+            status: 'accepted',
+        })
+        await newConnectionRequest.save()
+        sendStandardResponse(res, {
+            message: 'Connection created successfully',
+            data: { connectionRequest: newConnectionRequest },
+        })
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error })
+    }
+}
+
 export const deleteConnectionRequestByConnectionRequestId = async (req, res) => {
+    /* Admin controller only */
     try {
         validateDeleteConnectionRequestByConnectionRequestId(req)
         const { connectionRequestId } = req.params
@@ -42,6 +74,7 @@ export const deleteConnectionRequestByConnectionRequestId = async (req, res) => 
 }
 
 export const deleteConnectionRequestByEmail = async (req, res) => {
+    /* Admin controller only */
     try {
         validateDeleteConnectionRequestByEmail(req)
         const { fromUserEmail, toUserEmail } = req.body
@@ -74,6 +107,7 @@ export const deleteConnectionRequestByEmail = async (req, res) => {
 }
 
 export const deleteConnectionRequestByUserId = async (req, res) => {
+    /* Admin controller only */
     try {
         validateDeleteConnectionRequestByUserId(req)
         const { fromUserId, toUserId } = req.body
@@ -98,28 +132,11 @@ export const deleteConnectionRequestByUserId = async (req, res) => {
 }
 
 export const getAllConnectionRequests = async (_, res) => {
+    /* Admin controller only */
     try {
         const allConnectionRequests = await ConnectionRequestModel.find({})
             .populate('fromUser', USER.ADMIN_FIELDS)
             .populate('toUser', USER.ADMIN_FIELDS)
-        sendStandardResponse(res, {
-            message: 'Connection requests fetched successfully',
-            data: { connectionRequests: allConnectionRequests },
-        })
-    } catch (error) {
-        sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error })
-    }
-}
-
-export const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
-    /* get pending connection requests for review  */
-    try {
-        validateIsUserSignedIn(req)
-        const toUser = req.user._id
-        const allConnectionRequests = await ConnectionRequestModel.find({ toUser, status: 'interested' }).populate(
-            'fromUser',
-            USER.CUSTOMER_FIELDS
-        )
         sendStandardResponse(res, {
             message: 'Connection requests fetched successfully',
             data: { connectionRequests: allConnectionRequests },
@@ -152,35 +169,20 @@ export const getConnectionsByUser = async (req, res) => {
     }
 }
 
-export const sendConnectionRequest = async (req, res) => {
+export const getPendingConnectionRequestsForReviewByUser = async (req, res) => {
     try {
-        await validateSendConnectionRequest(req)
-        const { status, toUser } = req.params
-        const fromUser = req.user._id
-        const newConnectionRequest = ConnectionRequestModel({ fromUser, toUser, status })
-        await newConnectionRequest.save()
+        validateIsUserSignedIn(req)
+        const toUser = req.user._id
+        const allConnectionRequests = await ConnectionRequestModel.find({ toUser, status: 'interested' }).populate(
+            'fromUser',
+            USER.CUSTOMER_FIELDS
+        )
         sendStandardResponse(res, {
-            message: 'Connection request sent successfully',
-            data: { connectionRequest: newConnectionRequest },
+            message: 'Connection requests fetched successfully',
+            data: { connectionRequests: allConnectionRequests },
         })
     } catch (error) {
-        sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
-    }
-}
-
-export const reviewConnectionRequest = async (req, res) => {
-    try {
-        const connectionRequest = await validateReviewConnectionRequest(req)
-        const { status } = req.params
-        connectionRequest.status = status
-        await connectionRequest.save()
-
-        sendStandardResponse(res, {
-            message: 'Connection request reviewed successfully',
-            data: { connectionRequest },
-        })
-    } catch (error) {
-        sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
+        sendStandardResponse(res, { message: error.message, data: { connectionRequests: null }, error })
     }
 }
 
@@ -204,6 +206,38 @@ export const removeConnection = async (req, res) => {
         sendStandardResponse(res, {
             message: 'Connection deleted successfully',
             data: { connectionRequest },
+        })
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
+    }
+}
+
+export const reviewConnectionRequest = async (req, res) => {
+    try {
+        const connectionRequest = await validateReviewConnectionRequest(req)
+        const { status } = req.params
+        connectionRequest.status = status
+        await connectionRequest.save()
+
+        sendStandardResponse(res, {
+            message: 'Connection request reviewed successfully',
+            data: { connectionRequest },
+        })
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
+    }
+}
+
+export const sendConnectionRequest = async (req, res) => {
+    try {
+        await validateSendConnectionRequest(req)
+        const { status, toUser } = req.params
+        const fromUser = req.user._id
+        const newConnectionRequest = ConnectionRequestModel({ fromUser, toUser, status })
+        await newConnectionRequest.save()
+        sendStandardResponse(res, {
+            message: 'Connection request sent successfully',
+            data: { connectionRequest: newConnectionRequest },
         })
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { connectionRequest: null }, error })
