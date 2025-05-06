@@ -127,6 +127,22 @@ userSchema.virtual('age').get(function () {
     return age
 })
 
+userSchema.virtual('formattedDob').get(function () {
+    if (!this.dob) {
+        return null
+    }
+    const birthDate = new Date(this.dob)
+
+    const month = birthDate.getMonth()
+    const date = birthDate.getDate()
+
+    const dateString = date > 9 ? date : `0${date}`
+    const monthString = month > 8 ? month + 1 : `0${month + 1}`
+    const yearString = birthDate.getFullYear()
+
+    return `${yearString}-${monthString}-${dateString}`
+})
+
 userSchema.virtual('genderOptionsDisplay').get(() => {
     return [
         { displayName: 'Male', value: 'male' },

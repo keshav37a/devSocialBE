@@ -33,6 +33,6 @@ router.post('/send/:status/:toUser', userAuth, sendConnectionRequest)
 router.get('/review-requests', userAuth, getPendingConnectionRequestsForReviewByUser)
 router.get('/connections', userAuth, getConnectionsByUser)
 router.post('/review/:status/:connectionRequestId', userAuth, reviewConnectionRequest)
-router.delete('/connection/delete/:userId', userAuth, removeConnection)
+router.delete('/connection/remove/:userId', userAuth, removeConnection)
 
 export const connectionRequestRoutes = router
