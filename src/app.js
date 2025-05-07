@@ -1,3 +1,4 @@
+import { Command } from 'commander'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import {} from 'dotenv/config'
@@ -11,14 +12,21 @@ import { userRoutes } from '#Routes/userRoutes'
 import { logger } from '#Middlewares/logger'
 
 import { handleDBConnect } from '#Config/database'
-import { EXPRESS_PORT, FRONTEND_DEV_URL } from '#Config/keys'
+import { EXPRESS_PORT, FRONTEND_DEV_URL, FRONTEND_PROD_URL } from '#Config/keys'
+
+const program = new Command()
+
+program.option('-e, --env <mode>', 'set environment').parse(process.argv)
+
+const arguementData = program.opts()
+const isProd = arguementData.env === 'prod'
 
 const app = express()
 
 handleDBConnect()
     .then(() =>
         app.listen(EXPRESS_PORT, () => {
-            console.log(`listening on port ${EXPRESS_PORT}`)
+            console.log(`${isProd ? 'Prod env: ' : 'Dev env: '}listening on port ${EXPRESS_PORT}`)
         })
     )
     .catch((err) => {
@@ -36,7 +44,7 @@ app.use(cookieParser())
 
 app.use(
     cors({
-        origin: FRONTEND_DEV_URL,
+        origin: isProd ? FRONTEND_PROD_URL : FRONTEND_DEV_URL,
         optionsSuccessStatus: 200,
         credentials: true,
     })

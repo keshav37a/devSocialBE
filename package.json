@@ -16,6 +16,7 @@
     },
     "scripts": {
         "start": "node src/app.js",
+        "start-prod": "node src/app.js --env=prod",
         "dev": "nodemon src/app.js",
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
@@ -31,6 +32,7 @@
     "dependencies": {
         "bcrypt": "^5.1.1",
         "cloudinary": "^2.6.0",
+        "commander": "^13.1.0",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",

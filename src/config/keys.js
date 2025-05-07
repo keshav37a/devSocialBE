@@ -1,5 +1,6 @@
 export const EXPRESS_PORT = process.env.EXPRESS_PORT
 export const FRONTEND_DEV_URL = process.env.FRONTEND_DEV_URL
+export const FRONTEND_PROD_URL = process.env.FRONTEND_PROD_URL
 export const REQUEST_STATUS = {
     SUCCESS: {
         statusCode: 200,
