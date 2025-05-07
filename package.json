@@ -16,7 +16,7 @@
     },
     "scripts": {
         "start": "node src/app.js --env=prod",
-        "start-prod": "pm2 start npm -- start",
+        "start-prod": "pm2 start npm --name devSocialBE -- start",
         "dev": "nodemon src/app.js",
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
