@@ -1,7 +1,7 @@
 {
-    "name": "devtinderbe",
+    "name": "devsocialbe",
     "version": "1.0.0",
-    "description": "tinder for devs",
+    "description": "social media for devs",
     "main": "index.js",
     "type": "module",
     "imports": {
