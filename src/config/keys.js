@@ -29,6 +29,17 @@ export const REQUEST_STATUS = {
 }
 export const USER = {
     PASSWORD_SALT_ROUNDS: 10,
-    CUSTOMER_FIELDS: ['firstName', 'lastName', 'photoUrl', 'dob', 'gender', 'about', 'skills'],
-    ADMIN_FIELDS: ['firstName', 'lastName', 'photoUrl', 'dob', 'gender', 'about', 'skills', 'email'],
+    CUSTOMER_FIELDS: ['firstName', 'lastName', 'photoUrl', 'dob', 'gender', 'about', 'skills', 'email', 'fullName'],
+    ADMIN_FIELDS: [
+        'firstName',
+        'lastName',
+        'photoUrl',
+        'dob',
+        'gender',
+        'about',
+        'skills',
+        'email',
+        'type',
+        'fullName',
+    ],
 }

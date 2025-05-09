@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 
 import { UserModel } from '#Models/userModel'
 
+import { USER } from '#Config/keys'
 import {
     throwInvalidTokenError,
     throwTokenNotFoundError,
@@ -21,7 +22,7 @@ export const adminAuth = async (req, res, next) => {
             throwInvalidTokenError()
         }
 
-        const user = await UserModel.findById(userId)
+        const user = await UserModel.findById(userId).select(USER.ADMIN_FIELDS)
         if (!user) {
             throwUserNotFoundError()
         }
@@ -46,7 +47,7 @@ export const userAuth = async (req, res, next) => {
             throwInvalidTokenError()
         }
 
-        const user = await UserModel.findById(userId)
+        const user = await UserModel.findById(userId).select(USER.CUSTOMER_FIELDS)
         if (!user) {
             throwUserNotFoundError()
         }

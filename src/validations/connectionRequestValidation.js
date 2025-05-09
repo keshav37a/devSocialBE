@@ -5,6 +5,7 @@ import { UserModel } from '#Models/userModel'
 
 import { validateIsUserSignedIn, validateUserIdHelper } from '#Validations/userValidation'
 
+import { USER } from '#Config/keys'
 import {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestAlreadyReviewedError,
@@ -73,6 +74,8 @@ export const validateReviewConnectionRequest = async (req) => {
         throwInvalidDataError('status', status)
     }
     const connectionRequest = await ConnectionRequestModel.findById(connectionRequestId)
+        .populate('fromUser', USER.ADMIN_FIELDS)
+        .populate('toUser', USER.ADMIN_FIELDS)
     if (!connectionRequest) {
         throwConnectionRequestNotFoundForThisConnectionRequestId()
     }

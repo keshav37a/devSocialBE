@@ -21,6 +21,7 @@ import {
 import { sendStandardResponse } from '#Utils/responseUtils'
 
 import { USER } from '#Config/keys'
+import { sendEmailInBackground } from '#Utils/emailUtils'
 
 export const createConnectionByUserIds = async (req, res) => {
     /* Admin controller only */
@@ -215,7 +216,21 @@ export const removeConnection = async (req, res) => {
 export const reviewConnectionRequest = async (req, res) => {
     try {
         const connectionRequest = await validateReviewConnectionRequest(req)
+        const user = req.user
         const { status } = req.params
+        const fromUser = connectionRequest.fromUser
+        const toUser = connectionRequest.toUser
+        const requestAcceptedForUser = fromUser._id === user._id ? toUser : fromUser
+
+        if (status === 'accepted') {
+            sendEmailInBackground({
+                from: 'no-reply@devsocial.in',
+                to: requestAcceptedForUser.email,
+                subject: `DevSocial: Your connection request was accepted`,
+                emailBody: `Congratulations ${requestAcceptedForUser.fullName}, Your connection request was accepted by ${user.fullName}`,
+            })
+        }
+
         connectionRequest.status = status
         await connectionRequest.save()
 
@@ -233,6 +248,16 @@ export const sendConnectionRequest = async (req, res) => {
         await validateSendConnectionRequest(req)
         const { status, toUser } = req.params
         const fromUser = req.user._id
+        const toUserData = await UserModel.findById(toUser).select(USER.CUSTOMER_FIELDS)
+
+        if (status === 'interested') {
+            sendEmailInBackground({
+                to: toUserData.email,
+                subject: `DevSocial: You have received a connection request`,
+                emailBody: `Hi ${toUserData.fullName}, You have received a connection request from ${req.user.fullName}`,
+            })
+        }
+
         const newConnectionRequest = ConnectionRequestModel({ fromUser, toUser, status })
         await newConnectionRequest.save()
         sendStandardResponse(res, {

@@ -14,6 +14,7 @@ import { throwUserNotFoundError } from '#Utils/errorUtils'
 import { sendStandardResponse } from '#Utils/responseUtils'
 
 import { USER } from '#Config/keys'
+import { sendEmail } from '#Utils/emailUtils'
 
 export const bulkUpdateUsers = async (req, res) => {
     try {
@@ -103,6 +104,16 @@ export const getUserFeed = async (req, res) => {
             .skip(Number(skip))
             .limit(Number(limit))
         sendStandardResponse(res, { message: 'Feed fetched successfully', data: { feed } })
+    } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { feed: null }, error })
+    }
+}
+
+export const sendEmailToUser = async (req, res) => {
+    try {
+        const { to, from, emailBody, subject } = req.body
+        const data = await sendEmail({ to, from, emailBody, subject })
+        sendStandardResponse(res, { message: 'sendEmailToUser called successfully', data })
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { feed: null }, error })
     }
