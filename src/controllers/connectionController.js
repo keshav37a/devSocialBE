@@ -12,6 +12,7 @@ import {
 } from '#Validations/connectionRequestValidation'
 import { validateIsUserSignedIn } from '#Validations/userValidation'
 
+import { sendEmailInBackground } from '#Utils/emailUtils'
 import {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestNotFoundForTheseUsers,
@@ -21,7 +22,6 @@ import {
 import { sendStandardResponse } from '#Utils/responseUtils'
 
 import { USER } from '#Config/keys'
-import { sendEmailInBackground } from '#Utils/emailUtils'
 
 export const createConnectionByUserIds = async (req, res) => {
     /* Admin controller only */

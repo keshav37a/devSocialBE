@@ -5,7 +5,6 @@ import { UserModel } from '#Models/userModel'
 
 import { validateIsUserSignedIn, validateUserIdHelper } from '#Validations/userValidation'
 
-import { USER } from '#Config/keys'
 import {
     throwConnectionRequestAlreadyExistsForTheseUsers,
     throwConnectionRequestAlreadyReviewedError,
@@ -19,6 +18,8 @@ import {
     throwUserIdNotMatchingWithToUser,
     throwUserNotFoundError,
 } from '#Utils/errorUtils'
+
+import { USER } from '#Config/keys'
 
 export const validateCreateConnectionByUserIds = (req) => {
     validateIsUserSignedIn(req)
