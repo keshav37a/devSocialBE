@@ -16,12 +16,12 @@ export const initializeSocket = (expressServer) => {
 
     io.on('connection', (socket) => {
         console.log('on connection: socket.connected ', socket.connected)
-        socket.on('JOIN_ROOM', ({ fromUserId, toUserId }) => {
-            joinRoomController(socket, { fromUserId, toUserId })
+        socket.on('JOIN_ROOM', ({ fromUser, toUser }) => {
+            joinRoomController(socket, { fromUser, toUser })
         })
-        socket.on('SEND_MESSAGE', ({ fromUserId, toUserId, message }) => {
-            console.log({ fromUserId, toUserId, message })
-            sendAndSaveChatMessageController(socket, { fromUserId, toUserId, message })
+        socket.on('SEND_MESSAGE', ({ fromUser, toUser, message, sentAt }) => {
+            console.log({ fromUser, toUser, message })
+            sendAndSaveChatMessageController(socket, { fromUser, toUser, message, sentAt })
         })
         socket.on('disconnect', () => {
             console.log('user disconnected')

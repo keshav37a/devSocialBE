@@ -22,6 +22,12 @@ const chatMessageSchema = new Schema(
             required: true,
             trim: true,
         },
+        sentAt: {
+            type: Schema.Types.Date,
+        },
+        receivedAt: {
+            type: Schema.Types.Date,
+        },
     },
     { timestamps: true }
 )
