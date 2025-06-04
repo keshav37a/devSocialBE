@@ -5,11 +5,14 @@ import {} from 'dotenv/config'
 import express from 'express'
 
 import { authRoutes } from '#Routes/authRoutes'
+import { chatMessageRoutes } from '#Routes/chatMessageRoutes'
 import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
 import { profileRoutes } from '#Routes/profileRoutes'
 import { userRoutes } from '#Routes/userRoutes'
 
 import { logger } from '#Middlewares/logger'
+
+import { initializeSocket } from '#Utils/socket'
 
 import { handleDBConnect } from '#Config/database'
 import { EXPRESS_PORT, FRONTEND_DEV_URL, FRONTEND_PROD_URL } from '#Config/keys'
@@ -21,11 +24,12 @@ program.option('-e, --env <mode>', 'set environment').parse(process.argv)
 const arguementData = program.opts()
 const isProd = arguementData.env === 'prod'
 
-const app = express()
+const expressServer = express()
+const socketAndExpressServer = initializeSocket(expressServer)
 
 handleDBConnect()
     .then(() =>
-        app.listen(EXPRESS_PORT, () => {
+        socketAndExpressServer.listen(EXPRESS_PORT, () => {
             console.log(`${isProd ? 'Prod env: ' : 'Dev env: '}listening on port ${EXPRESS_PORT}`)
         })
     )
@@ -33,16 +37,16 @@ handleDBConnect()
         console.log(`error in connecting to db ${err}`)
     })
 
-app.use(express.json({ limit: '50mb' }))
-app.use(
+expressServer.use(express.json({ limit: '50mb' }))
+expressServer.use(
     express.urlencoded({
         limit: '50mb',
         extended: true,
     })
 )
-app.use(cookieParser())
+expressServer.use(cookieParser())
 
-app.use(
+expressServer.use(
     cors({
         origin: isProd ? FRONTEND_PROD_URL : FRONTEND_DEV_URL,
         optionsSuccessStatus: 200,
@@ -50,9 +54,10 @@ app.use(
     })
 )
 
-app.use('*', logger)
+expressServer.use('*', logger)
 
-app.use('/auth', authRoutes)
-app.use('/profile', profileRoutes)
-app.use('/connection-request', connectionRequestRoutes)
-app.use('/user', userRoutes)
+expressServer.use('/auth', authRoutes)
+expressServer.use('/chat-message', chatMessageRoutes)
+expressServer.use('/connection-request', connectionRequestRoutes)
+expressServer.use('/profile', profileRoutes)
+expressServer.use('/user', userRoutes)
