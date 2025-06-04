@@ -43,3 +43,5 @@ export const USER = {
         'fullName',
     ],
 }
+export const DEFAULT_USER_DP =
+    'https://res.cloudinary.com/dqiewourk/image/upload/v1749020573/default-user-dp_y3asgd.png'

@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken'
 import { Schema, model } from 'mongoose'
 import validator from 'validator'
 
+import { DEFAULT_USER_DP } from '#Config/keys'
+
 const userSchema = new Schema(
     {
         firstName: {
@@ -71,6 +73,7 @@ const userSchema = new Schema(
             type: String,
             trim: true,
             maxLength: 150,
+            default: DEFAULT_USER_DP,
             validate: {
                 validator: (url) => validator.isURL(url),
                 message: 'Schema validation error. Invalid photoUrl.',
