@@ -22,10 +22,17 @@ const chatMessageSchema = new Schema(
             required: true,
             trim: true,
         },
+        isRead: {
+            type: Boolean,
+            default: false,
+        },
         sentAt: {
             type: Schema.Types.Date,
         },
         receivedAt: {
+            type: Schema.Types.Date,
+        },
+        readAt: {
             type: Schema.Types.Date,
         },
     },

@@ -2,7 +2,7 @@ import { Server } from 'socket.io'
 
 import { createServer } from 'node:http'
 
-import { joinRoomController, sendAndSaveChatMessageController } from '#Controllers/chatMessageController'
+import { joinRoom, sendAndSaveChatMessage, updateChatMessageReadStatus } from '#Controllers/chatMessageController'
 
 export const initializeSocket = (expressServer) => {
     console.log('initializeSocket called')
@@ -17,11 +17,15 @@ export const initializeSocket = (expressServer) => {
     io.on('connection', (socket) => {
         console.log('on connection: socket.connected ', socket.connected)
         socket.on('JOIN_ROOM', ({ fromUser, toUser }) => {
-            joinRoomController(socket, { fromUser, toUser })
+            joinRoom(socket, { fromUser, toUser })
         })
         socket.on('SEND_MESSAGE', ({ fromUser, toUser, message, sentAt }) => {
             console.log({ fromUser, toUser, message })
-            sendAndSaveChatMessageController(socket, { fromUser, toUser, message, sentAt })
+            sendAndSaveChatMessage(socket, io, { fromUser, toUser, message, sentAt })
+        })
+        socket.on('READ_MESSAGE', ({ messageId, readAt, roomId }) => {
+            console.log({ messageId, readAt })
+            updateChatMessageReadStatus(socket, { messageId, readAt, roomId, isRead: true })
         })
         socket.on('disconnect', () => {
             console.log('user disconnected')
