@@ -98,3 +98,11 @@ export const updateChatMessageReadStatus = async (socket, { messageId, readAt, r
         console.error(error)
     }
 }
+
+export const emitUserTypingEvent = (socket, { roomId }) => {
+    try {
+        socket.to(roomId).emit('USER_TYPING', { roomId })
+    } catch (error) {
+        console.error(error)
+    }
+}

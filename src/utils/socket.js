@@ -2,7 +2,12 @@ import { Server } from 'socket.io'
 
 import { createServer } from 'node:http'
 
-import { joinRoom, sendAndSaveChatMessage, updateChatMessageReadStatus } from '#Controllers/chatMessageController'
+import {
+    emitUserTypingEvent,
+    joinRoom,
+    sendAndSaveChatMessage,
+    updateChatMessageReadStatus,
+} from '#Controllers/chatMessageController'
 
 export const initializeSocket = (expressServer) => {
     console.log('initializeSocket called')
@@ -15,22 +20,22 @@ export const initializeSocket = (expressServer) => {
     })
 
     io.on('connection', (socket) => {
-        console.log('on connection: socket.connected ', socket.connected)
-        socket.on('JOIN_ROOM', ({ fromUser, toUser }) => {
-            joinRoom(socket, { fromUser, toUser })
-        })
-        socket.on('SEND_MESSAGE', ({ fromUser, toUser, message, sentAt }) => {
-            console.log({ fromUser, toUser, message })
+        socket.on('JOIN_ROOM', ({ fromUser, toUser }) => joinRoom(socket, { fromUser, toUser }))
+
+        socket.on('SEND_MESSAGE', ({ fromUser, toUser, message, sentAt }) =>
             sendAndSaveChatMessage(socket, io, { fromUser, toUser, message, sentAt })
-        })
-        socket.on('READ_MESSAGE', ({ messageId, readAt, roomId }) => {
-            console.log({ messageId, readAt })
+        )
+
+        socket.on('READ_MESSAGE', ({ messageId, readAt, roomId }) =>
             updateChatMessageReadStatus(socket, { messageId, readAt, roomId, isRead: true })
-        })
+        )
+
+        socket.on('USER_TYPING', ({ roomId }) => emitUserTypingEvent(socket, { roomId }))
+
         socket.on('disconnect', () => {
             console.log('user disconnected')
-            console.log('disconnect on connection: socket.connected ', socket.connected)
         })
+
         socket.on('close', () => {
             console.log('socket closed')
         })
