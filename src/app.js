@@ -5,7 +5,7 @@ import {} from 'dotenv/config'
 import express from 'express'
 
 import { authRoutes } from '#Routes/authRoutes'
-import { chatMessageRoutes } from '#Routes/chatMessageRoutes'
+import { chatMessageRoutes } from '#Routes/chatRoutes'
 import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
 import { profileRoutes } from '#Routes/profileRoutes'
 import { userRoutes } from '#Routes/userRoutes'
@@ -57,7 +57,7 @@ expressServer.use(
 expressServer.use('*', logger)
 
 expressServer.use('/auth', authRoutes)
-expressServer.use('/chat-message', chatMessageRoutes)
+expressServer.use('/chat', chatMessageRoutes)
 expressServer.use('/connection-request', connectionRequestRoutes)
 expressServer.use('/profile', profileRoutes)
 expressServer.use('/user', userRoutes)

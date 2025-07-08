@@ -10,11 +10,11 @@ import {
     validateUpdateUser,
 } from '#Validations/userValidation'
 
+import { sendEmail } from '#Utils/emailUtils'
 import { throwUserNotFoundError } from '#Utils/errorUtils'
 import { sendStandardResponse } from '#Utils/responseUtils'
 
 import { USER } from '#Config/keys'
-import { sendEmail } from '#Utils/emailUtils'
 
 export const bulkUpdateUsers = async (req, res) => {
     try {

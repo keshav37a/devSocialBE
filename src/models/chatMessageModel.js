@@ -7,36 +7,31 @@ const chatMessageSchema = new Schema(
             required: true,
             ref: 'User',
         },
-        toUser: {
+        chatRoom: {
             type: Schema.Types.ObjectId,
             required: true,
-            ref: 'User',
+            ref: 'ChatRoom',
         },
         message: {
             type: Schema.Types.String,
             required: true,
             trim: true,
         },
-        roomId: {
-            type: Schema.Types.String,
-            required: true,
-            trim: true,
-        },
-        isRead: {
-            type: Boolean,
-            default: false,
-        },
+        readBy: [
+            {
+                user: { type: Schema.Types.ObjectId, ref: 'User' },
+                readAt: Date,
+            },
+        ],
         sentAt: {
             type: Schema.Types.Date,
+            required: true,
         },
         receivedAt: {
             type: Schema.Types.Date,
         },
-        readAt: {
-            type: Schema.Types.Date,
-        },
     },
-    { timestamps: true }
+    { versionKey: false }
 )
 
 export const ChatMessageModel = model('ChatMessage', chatMessageSchema)
