@@ -91,6 +91,14 @@ const userSchema = new Schema(
                 message: 'Schema validation error. Count of skills must be less than 5',
             },
         },
+        otp: {
+            value: {
+                type: Number,
+            },
+            expiry: {
+                type: Date,
+            },
+        },
     },
     { timestamps: true }
 )

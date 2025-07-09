@@ -39,6 +39,12 @@ export const throwEmailAlreadyInUseError = () => {
     })
 }
 
+export const throwIncorrectOtpError = () => {
+    throw new Error('API validation error. Incorrect otp', {
+        cause: REQUEST_STATUS.BAD_REQUEST,
+    })
+}
+
 export const throwIncorrectPasswordError = () => {
     throw new Error('API validation error. Incorrect password', {
         cause: REQUEST_STATUS.BAD_REQUEST,

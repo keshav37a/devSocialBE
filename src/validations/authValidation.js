@@ -2,6 +2,32 @@ import validator from 'validator'
 
 import { throwInvalidDataError, throwMissingDataError, throwUserSkillCountError } from '#Utils/errorUtils'
 
+export const validateForgotPassword = (req) => {
+    const { email } = req.body
+    if (!email) {
+        throwMissingDataError('email')
+    }
+    if (!validator.isEmail(email)) {
+        throwInvalidDataError('email', email)
+    }
+}
+
+export const validateResetPassword = (req) => {
+    const { email, otp, newPassword } = req.body
+    if (!email) {
+        throwMissingDataError('email')
+    }
+    if (!otp) {
+        throwMissingDataError('otp')
+    }
+    if (!newPassword) {
+        throwMissingDataError('newPassword')
+    }
+    if (!validator.isEmail(email)) {
+        throwInvalidDataError('email', email)
+    }
+}
+
 export const validateUserSignIn = (req) => {
     const { email, password } = req.body
     if (!email) {
