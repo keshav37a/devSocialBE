@@ -35,7 +35,6 @@ const userSchema = new Schema(
         },
         password: {
             type: String,
-            required: true,
         },
         dob: {
             type: Date,
@@ -98,6 +97,11 @@ const userSchema = new Schema(
             expiry: {
                 type: Date,
             },
+        },
+        googleId: {
+            type: String,
+            unique: true,
+            trim: true,
         },
     },
     { timestamps: true }

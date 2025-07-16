@@ -1,4 +1,5 @@
 import { hash } from 'bcrypt'
+import { OAuth2Client } from 'google-auth-library'
 
 import { UserModel } from '#Models/userModel'
 
@@ -62,7 +63,7 @@ export const resetPassword = async (req, res) => {
             throwUserNotFoundError()
         }
         const otpFromDB = user.otp
-        if (otp !== otpFromDB.value || otpFromDB.expiry <= new Date(Date.now())) {
+        if (Number(otp) !== Number(otpFromDB.value) || otpFromDB.expiry <= new Date(Date.now())) {
             throwIncorrectOtpError()
         }
         const passwordHash = await generateUserProfilePasswordHash(newPassword)
@@ -94,6 +95,49 @@ export const signInUser = async (req, res) => {
         res.cookie('token', token)
         sendStandardResponse(res, { message: 'User authenticated', data: { user } })
     } catch (error) {
+        sendStandardResponse(res, { message: error.message, data: { user: null }, error })
+    }
+}
+
+export const signInUserWithGoogle = async (req, res) => {
+    const { token } = req.body
+    try {
+        const googleClient = new OAuth2Client({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            redirectUri: 'postmessage',
+        })
+        const { tokens } = await googleClient.getToken(token)
+        const ticket = await googleClient.verifyIdToken({
+            idToken: tokens.id_token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        })
+
+        const payload = ticket.getPayload()
+        const { sub, email, given_name, family_name, picture } = payload
+
+        let user = await UserModel.findOne({ email })
+        if (!user) {
+            user = await UserModel.create({
+                googleId: sub,
+                email,
+                firstName: given_name,
+                lastName: family_name,
+                photoUrl: picture,
+            })
+        } else {
+            if (!user.googleId) {
+                user.googleId = sub
+                await user.save()
+            }
+        }
+
+        const jwtToken = await user.getJWT()
+        user.password = null
+        res.cookie('token', jwtToken)
+        sendStandardResponse(res, { message: 'User authenticated', data: { user } })
+    } catch (error) {
+        console.log('error: ', error)
         sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
 }
