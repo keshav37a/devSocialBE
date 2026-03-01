@@ -25,7 +25,7 @@ const arguementData = program.opts()
 const isProd = arguementData.env === 'prod'
 
 const expressServer = express()
-const socketAndExpressServer = initializeSocket(expressServer)
+const socketAndExpressServer = initializeSocket(expressServer, isProd)
 
 handleDBConnect()
     .then(() =>

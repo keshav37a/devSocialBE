@@ -2,6 +2,8 @@ import { Server } from 'socket.io'
 
 import { createServer } from 'node:http'
 
+import { FRONTEND_DEV_URL, FRONTEND_PROD_URL } from '#Config/keys'
+
 import {
     emitUserTypingEvent,
     joinRoom,
@@ -9,11 +11,11 @@ import {
     updateChatMessageReadStatus,
 } from '#Controllers/chatController'
 
-export const initializeSocket = (expressServer) => {
+export const initializeSocket = (expressServer, isProd) => {
     const httpServer = createServer(expressServer)
     const io = new Server(httpServer, {
         cors: {
-            origin: 'http://localhost:5173', // React app origin
+            origin: isProd ? FRONTEND_PROD_URL : FRONTEND_DEV_URL,
             methods: ['GET', 'POST'],
         },
     })
