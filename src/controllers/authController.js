@@ -137,7 +137,6 @@ export const signInUserWithGoogle = async (req, res) => {
         res.cookie('token', jwtToken)
         sendStandardResponse(res, { message: 'User authenticated', data: { user } })
     } catch (error) {
-        console.log('error: ', error)
         sendStandardResponse(res, { message: error.message, data: { user: null }, error })
     }
 }

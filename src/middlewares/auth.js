@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken'
 
 import { UserModel } from '#Models/userModel'
 
-import { USER } from '#Config/keys'
 import {
     throwInvalidTokenError,
     throwTokenNotFoundError,
@@ -10,6 +9,8 @@ import {
     throwUserNotFoundError,
 } from '#Utils/errorUtils'
 import { sendStandardResponse } from '#Utils/responseUtils'
+
+import { USER } from '#Config/keys'
 
 export const adminAuth = async (req, res, next) => {
     try {

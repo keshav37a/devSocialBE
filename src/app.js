@@ -4,6 +4,7 @@ import cors from 'cors'
 import {} from 'dotenv/config'
 import express from 'express'
 
+import { articlesRoutes } from '#Routes/articleRoute'
 import { authRoutes } from '#Routes/authRoutes'
 import { chatMessageRoutes } from '#Routes/chatRoutes'
 import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
@@ -12,7 +13,7 @@ import { userRoutes } from '#Routes/userRoutes'
 
 import { logger } from '#Middlewares/logger'
 
-import { initializeSocket } from '#Utils/socket'
+import { initializeSocket } from '#Services/socketService'
 
 import { handleDBConnect } from '#Config/database'
 import { EXPRESS_PORT, FRONTEND_DEV_URL, FRONTEND_PROD_URL } from '#Config/keys'
@@ -59,5 +60,6 @@ expressServer.use('*', logger)
 expressServer.use('/api/auth', authRoutes)
 expressServer.use('/api/chat', chatMessageRoutes)
 expressServer.use('/api/connection-request', connectionRequestRoutes)
+expressServer.use('/api/articles', articlesRoutes)
 expressServer.use('/api/profile', profileRoutes)
 expressServer.use('/api/user', userRoutes)

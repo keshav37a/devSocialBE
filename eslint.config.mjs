@@ -52,6 +52,11 @@ export default defineConfig([
                             position: 'after',
                         },
                         {
+                            pattern: '#Services/*',
+                            group: 'internal',
+                            position: 'after',
+                        },
+                        {
                             pattern: '#Validations/*',
                             group: 'internal',
                             position: 'after',
@@ -98,6 +103,7 @@ export default defineConfig([
                         ['#Middlewares', 'src/middlewares'],
                         ['#Models', 'src/models'],
                         ['#Routes', 'src/routes'],
+                        ['#Services', 'src/services'],
                         ['#Utils', 'src/utils'],
                         ['#Validations', 'src/validations'],
                     ],

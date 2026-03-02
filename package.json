@@ -11,6 +11,7 @@
         "#Middlewares/*": "./src/middlewares/*.js",
         "#Models/*": "./src/models/*.js",
         "#Routes/*": "./src/routes/*.js",
+        "#Services/*": "./src/services/*.js",
         "#Utils/*": "./src/utils/*.js",
         "#Validations/*": "./src/validations/*.js"
     },
