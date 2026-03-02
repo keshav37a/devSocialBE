@@ -17,6 +17,7 @@ export const initializeSocket = (expressServer, isProd) => {
         cors: {
             origin: isProd ? FRONTEND_PROD_URL : FRONTEND_DEV_URL,
             methods: ['GET', 'POST'],
+            credentials: true,
         },
     })
 
