@@ -56,8 +56,8 @@ expressServer.use(
 
 expressServer.use('*', logger)
 
-expressServer.use('/auth', authRoutes)
-expressServer.use('/chat', chatMessageRoutes)
-expressServer.use('/connection-request', connectionRequestRoutes)
-expressServer.use('/profile', profileRoutes)
-expressServer.use('/user', userRoutes)
+expressServer.use('/api/auth', authRoutes)
+expressServer.use('/api/chat', chatMessageRoutes)
+expressServer.use('/api/connection-request', connectionRequestRoutes)
+expressServer.use('/api/profile', profileRoutes)
+expressServer.use('/api/user', userRoutes)
