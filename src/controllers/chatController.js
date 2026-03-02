@@ -1,5 +1,3 @@
-import crypto from 'crypto'
-
 import { ChatMessageModel } from '#Models/chatMessageModel'
 import { ChatRoomModel } from '#Models/chatRoomModel'
 
@@ -27,57 +25,6 @@ export const deleteAllChatMessages = async (_, res) => {
         })
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { chatMessages: null }, error })
-    }
-}
-
-export const joinRoom = (socket, { fromUser, participants }) => {
-    try {
-        const roomId = getRoomId(participants)
-        socket.join(roomId)
-        socket.to(roomId).emit('USER_JOINED_ROOM', { userId: fromUser, roomId })
-    } catch (err) {
-        console.error(err)
-    }
-}
-
-export const getRoomId = (participants) => {
-    const participantsString = participants.sort().join('_')
-    return crypto.createHash('sha256').update(participantsString).digest('hex')
-}
-
-export const sendAndSaveChatMessage = async (socket, io, { fromUser, message, participants, sentAt }) => {
-    try {
-        const roomId = getRoomId(participants)
-        const receivedAt = new Date()
-
-        const newChatMessageData = { fromUser, message, receivedAt, sentAt, participants }
-
-        /* Emit receive message event */
-        socket.to(roomId).emit('RECEIVE_MESSAGE', newChatMessageData)
-
-        /* Fetch or create new chat room */
-        let chatRoom = await ChatRoomModel.findOne({ participants })
-        if (!chatRoom) {
-            chatRoom = ChatRoomModel({ participants })
-        }
-
-        /* Save new message in DB */
-        newChatMessageData.chatRoom = chatRoom._id
-
-        const newChatMessage = ChatMessageModel(newChatMessageData)
-        const newChatMessageId = newChatMessage._id
-
-        chatRoom.messages.push(newChatMessageId)
-        chatRoom.lastMessage = newChatMessageId
-
-        await newChatMessage.save()
-        await chatRoom.save()
-
-        /* Update event (_id) new message for client  */
-        newChatMessageData.messageId = newChatMessageId
-        io.to(roomId).emit('SAVE_MESSAGE', newChatMessageData)
-    } catch (err) {
-        console.error(err)
     }
 }
 
@@ -145,37 +92,5 @@ export const updateChatMessage = async (req, res) => {
         })
     } catch (error) {
         sendStandardResponse(res, { message: error.message, data: { chatMessage: null }, error })
-    }
-}
-
-export const updateChatMessageReadStatus = async (socket, { messageId, readBy, participants }) => {
-    try {
-        /* Update event (_id) new message for client  */
-        const roomId = getRoomId(participants)
-        socket.to(roomId).emit('READ_MESSAGE', { messageId, readBy, participants })
-        const messageToBeUpdated = await ChatMessageModel.findById(messageId)
-
-        if (!messageToBeUpdated) {
-            throw new Error('Message not found')
-        }
-
-        /* Check if the user has already read the message */
-        const hasUserRead = messageToBeUpdated.readBy.some((entry) => entry.user.toString() === readBy.user)
-
-        if (!hasUserRead) {
-            messageToBeUpdated.readBy.push(readBy)
-            await messageToBeUpdated.save()
-        }
-    } catch (error) {
-        console.error(error)
-    }
-}
-
-export const emitUserTypingEvent = (socket, { participants, fromUser }) => {
-    try {
-        const roomId = getRoomId(participants)
-        socket.to(roomId).emit('USER_TYPING', { participants, fromUser })
-    } catch (error) {
-        console.error(error)
     }
 }
