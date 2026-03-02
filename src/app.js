@@ -4,7 +4,7 @@ import cors from 'cors'
 import {} from 'dotenv/config'
 import express from 'express'
 
-import { articlesRoutes } from '#Routes/articleRoute'
+import { articlesRoutes } from '#Routes/articleRoutes'
 import { authRoutes } from '#Routes/authRoutes'
 import { chatMessageRoutes } from '#Routes/chatRoutes'
 import { connectionRequestRoutes } from '#Routes/connectionRequestRoutes'
@@ -13,9 +13,9 @@ import { userRoutes } from '#Routes/userRoutes'
 
 import { logger } from '#Middlewares/logger'
 
-import { initializeSocket } from '#Services/socketService'
+import { initializeSocket } from '#Services/chatService'
+import { handleDBConnect } from '#Services/databaseService'
 
-import { handleDBConnect } from '#Config/database'
 import { EXPRESS_PORT, FRONTEND_DEV_URL, FRONTEND_PROD_URL } from '#Config/keys'
 
 const program = new Command()

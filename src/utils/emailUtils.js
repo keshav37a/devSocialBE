@@ -1,4 +1,4 @@
-import { transporter } from '#Config/nodemailer'
+import { transporter } from '#Services/nodemailerService'
 
 export const sendEmail = async ({ from = process.env.GOOGLE_OAUTH_EMAIL, to, subject, emailBody }) => {
     try {

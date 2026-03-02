@@ -1,6 +1,12 @@
+import { v2 as cloudinary } from 'cloudinary'
 import streamifier from 'streamifier'
 
-import { cloudinary } from '#Config/cloudinary'
+cloudinary.config({
+    secure: true,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 const streamUpload = (buffer, folderPath, fileName = String(Date.now().getTime())) => {
     return new Promise((resolve, reject) => {
@@ -30,6 +36,14 @@ export const uploadImage = async (req, _, next) => {
         next()
     } catch (err) {
         console.log(err)
+        next()
+    }
+}
+
+/* eslint-disable security/detect-object-injection */
+export const attachParams = (params = []) => {
+    return (req, _, next) => {
+        params.forEach(({ key, value }) => (req[key] = value))
         next()
     }
 }

@@ -1,9 +1,9 @@
 import express from 'express'
 import multer from 'multer'
 
-import { attachParams } from '#Middlewares/attachParams'
 import { userAuth } from '#Middlewares/auth'
-import { uploadImage } from '#Middlewares/cloudinary'
+
+import { attachParams, uploadImage } from '#Services/cloudinaryService'
 
 import { changePasswordAsSignedInUser, getUserProfile, updateUserProfile } from '#Controllers/profileController'
 
