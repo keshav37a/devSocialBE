@@ -16,7 +16,7 @@ import { logger } from '#Middlewares/logger'
 import { initializeSocket } from '#Services/chatService'
 import { handleDBConnect } from '#Services/databaseService'
 
-import { EXPRESS_PORT, FRONTEND_DEV_URL, FRONTEND_PROD_URL } from '#Config/keys'
+import { FRONTEND_DEV_URL, FRONTEND_PROD_URL, PORT_DEV, PORT_PROD } from '#Config/keys'
 
 const program = new Command()
 
@@ -27,11 +27,12 @@ const isProd = arguementData.env === 'prod'
 
 const expressServer = express()
 const socketAndExpressServer = initializeSocket(expressServer, isProd)
+const port = isProd ? PORT_PROD : PORT_DEV
 
 handleDBConnect()
     .then(() =>
-        socketAndExpressServer.listen(EXPRESS_PORT, () => {
-            console.log(`${isProd ? 'Prod env: ' : 'Dev env: '}listening on port ${EXPRESS_PORT}`)
+        socketAndExpressServer.listen(port, () => {
+            console.log(`${isProd ? 'Prod env: ' : 'Dev env: '}listening on port ${port}`)
         })
     )
     .catch((err) => {
