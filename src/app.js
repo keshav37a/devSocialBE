@@ -1,4 +1,3 @@
-import { Command } from 'commander'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import {} from 'dotenv/config'
@@ -18,12 +17,7 @@ import { handleDBConnect } from '#Services/databaseService'
 
 import { FRONTEND_DEV_URL, FRONTEND_PROD_URL, PORT_DEV, PORT_PROD } from '#Config/keys'
 
-const program = new Command()
-
-program.option('-e, --env <mode>', 'set environment').parse(process.argv)
-
-const arguementData = program.opts()
-const isProd = arguementData.env === 'prod'
+const isProd = process.env.NODE_ENV === 'prod'
 
 const expressServer = express()
 const socketAndExpressServer = initializeSocket(expressServer, isProd)
